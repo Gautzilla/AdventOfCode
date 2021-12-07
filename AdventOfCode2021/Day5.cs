@@ -65,13 +65,13 @@ namespace AdventOfCode2021
                         {
                             for(int j = 0; j <= x2 - x1; j++)
                             {
-                                grid[x1+j, y1+j]++;
+                                grid[x1 + j, y1 + j]++;
                             }
                         } else
                         {
                             for (int j = 0; j <= x2 - x1; j++)
                             {
-                                grid[x1 + j, y1-j]++;
+                                grid[x1 + j, y1 - j]++;
                             }
                         }
                     } else
