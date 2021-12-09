@@ -40,10 +40,19 @@ namespace AdventOfCode2021
                         bool risky = true;
                         int point = map[x, y];
 
-                        if ((x > 0) && risky) risky = map[x - 1, y] > point;
-                        if ((y > 0) && risky) risky = map[x, y - 1] > point;
-                        if ((x < map.GetLength(0) - 1) && risky) risky = map[x + 1, y] > point;
-                        if ((y < map.GetLength(1) - 1) && risky) risky = map[x, y + 1] > point;
+                        for (int i = -1; i <= 1; i++)
+                        {
+                            for (int j = -1; j <= 1; j++)
+                            {
+                                if (Math.Abs(i) + Math.Abs(j) == 1)
+                                {
+                                    if (( (x+i) >= 0) && ((x+i) < map.GetLength(0)) && ((y+j) >= 0) && ((y+j) < map.GetLength(1)) && risky)
+                                    {
+                                        risky = map[x + i, y + j] > point;
+                                    }
+                                }
+                            }
+                        }
 
                         if (risky) risk += point + 1;
                     }
@@ -91,26 +100,19 @@ namespace AdventOfCode2021
 
                 basinSize++;
 
-                if ((x > 0) && !markedMap[x - 1, y] && (map[x - 1, y] != 9))
+                for (int i = -1; i <= 1; i++)
                 {
-                    pointsToEvaluate.Add(new int[] { x - 1, y });
-                    markedMap[x - 1, y] = true;
-
-                }
-                if ((y > 0) && !markedMap[x, y - 1] && (map[x, y - 1] != 9))
-                {
-                    pointsToEvaluate.Add(new int[] { x, y - 1 });
-                    markedMap[x, y - 1] = true;
-                }
-                if ((x < map.GetLength(0) - 1) && !markedMap[x + 1, y] && (map[x + 1, y] != 9))
-                {
-                    pointsToEvaluate.Add(new int[] { x + 1, y });
-                    markedMap[x + 1, y] = true;
-                }
-                if ((y < map.GetLength(1) - 1) && !markedMap[x, y + 1] && (map[x, y + 1] != 9))
-                {
-                    pointsToEvaluate.Add(new int[] { x, y + 1 });
-                    markedMap[x, y + 1] = true;
+                    for (int j = -1; j <= 1; j++)
+                    {
+                        if (Math.Abs(i) + Math.Abs(j) == 1)
+                        {
+                            if ( ((x + i) >= 0) && ((x + i) < map.GetLength(0)) && ((y + j) >= 0) && ((y + j) < map.GetLength(1)) && !markedMap[x+i, y+j] && (map[x+i, y+j] != 9))
+                            {
+                                pointsToEvaluate.Add(new int[] { x + i, y + j });
+                                markedMap[x + i, y + j] = true;
+                            }
+                        }
+                    }
                 }
 
                 pointsToEvaluate.RemoveAt(0);
