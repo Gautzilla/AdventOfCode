@@ -12,9 +12,8 @@ namespace AdventOfCode2021
         
         public static void Solve(int part)
         {
-            //string path = @"D:\Documents Gauthier\Programmation\AdventOfCode2021\Day9\exampleInput.txt";
-            //string path = @"D:\Documents Gauthier\Programmation\AdventOfCode2021\Day9\input.txt";
-            string path = @"C:\Users\User\Desktop\exampleInput.txt";
+            // string path = @"..\..\Inputs\day10Example.txt";
+            string path = @"..\..\Inputs\day10.txt";
 
             List<string> input = File.ReadAllLines(path).ToArray().ToList();
 

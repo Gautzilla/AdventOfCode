@@ -10,13 +10,16 @@ namespace AdventOfCode2021
 {
     class Day5
     {
-        static public void Solve()
+        static public void Solve(int part)
         {
-            string filePath = @"D:\Documents Gauthier\Programmation\AdventOfCode2021\Day5\input.txt";
+            // string path = @"..\..\Inputs\day5Example.txt";
+            string path = @"..\..\Inputs\day5.txt";
 
-            List<string> input = File.ReadAllLines(filePath).ToList();
+            List<string> input = File.ReadAllLines(path).ToList();
 
             List<int[]> vents = input.Select(a => a.Split(new char[] { ',' , '-', '>', ' ' }, StringSplitOptions.RemoveEmptyEntries)).Select(b => b.Select(c => int.Parse(c)).ToArray()).ToList();
+
+            if (part == 1) vents.RemoveAll(a => ((a[0] != a[2]) && (a[1] != a[3])));
 
             int maxValue = vents.Select(a => a.Max()).Max()+1;
             int[,] grid = new int[maxValue, maxValue];

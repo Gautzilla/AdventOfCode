@@ -9,16 +9,17 @@ namespace AdventOfCode2021
 {
     class Day6
     {
-        static public void Solve()
+        static public void Solve(int part)
         {
-            string filePath = @"D:\Documents Gauthier\Programmation\AdventOfCode2021\Day6\input.txt";
+            // string path = @"..\..\Inputs\day6Example.txt";
+            string path = @"..\..\Inputs\day6.txt";
 
-            List<int> input = File.ReadAllLines(filePath)[0].Split(',').Select(a => int.Parse(a)).ToList();
+            List<int> input = File.ReadAllLines(path)[0].Split(',').Select(a => int.Parse(a)).ToList();
             List<long> lanternfishes = Enumerable.Repeat<long>(0, 9).ToList();
 
             foreach (int fish in input) lanternfishes[fish]++;
 
-            int dayCount = 256;
+            int dayCount = part == 1 ? 80 : 256;
 
             for (int i = 0; i < dayCount; i++)
             {

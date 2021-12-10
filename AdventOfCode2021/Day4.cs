@@ -9,10 +9,12 @@ namespace AdventOfCode2021
 {
     class Day4
     {
-        static public void Solve()
+        static public void Solve(int part)
         {
-            string filePath = @"D:\Documents Gauthier\Programmation\AdventOfCode2021\Day4\input.txt";
-            List<string> input = File.ReadAllLines(filePath).ToList();
+            // string path = @"..\..\Inputs\day4Example.txt";
+            string path = @"..\..\Inputs\day4.txt";
+
+            List<string> input = File.ReadAllLines(path).ToList();
             List<string> chosenNumbers = input[0].Split(',').ToList();
 
             List<string[,]> grids = CreateGrids(input);
@@ -29,6 +31,12 @@ namespace AdventOfCode2021
 
                     if (bingo)
                     {
+                        if (part == 1)
+                        {
+                            Console.WriteLine(GridScore(grids[j], chosenNumbers.Take(i).ToList()));
+                            return;
+                        }
+
                         uncompleteGrids.RemoveAll(a => a == j);
                         if (uncompleteGrids.Count() == 0)
                         {
