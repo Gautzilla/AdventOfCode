@@ -39,7 +39,7 @@ namespace AdventOfCode2021
 
                 while (oxygenGeneratorRating.Count() > 1)
                 {
-                    oxygenGeneratorRating = oxygenGeneratorRating.Where(a => (oxygenGeneratorRating.Count(b => b[i] == a[i]) > oxygenGeneratorRating.Count(b => b[i] != a[i])) || (oxygenGeneratorRating.Count(b => b[i] == a[i]) == oxygenGeneratorRating.Count(b => b[i] != a[i])) && a[i] == '1').ToList();
+                    oxygenGeneratorRating = oxygenGeneratorRating.Where(a => (oxygenGeneratorRating.Count(b => b[i] == a[i]) > oxygenGeneratorRating.Count(b => b[i] != a[i])) || (oxygenGeneratorRating.Count(b => b[i] == a[i]) == oxygenGeneratorRating.Count(b => b[i] != a[i])) && (a[i] == '1')).ToList();
                     i++;
                 }
 
@@ -47,7 +47,7 @@ namespace AdventOfCode2021
 
                 while (co2ScrubberRating.Count() > 1)
                 {
-                    co2ScrubberRating = co2ScrubberRating.Where(a => (co2ScrubberRating.Count(b => b[i] == a[i]) < co2ScrubberRating.Count(b => b[i] != a[i])) || (co2ScrubberRating.Count(b => b[i] == a[i]) == co2ScrubberRating.Count(b => b[i] != a[i])) && a[i] == '0').ToList();
+                    co2ScrubberRating = co2ScrubberRating.Where(a => (co2ScrubberRating.Count(b => b[i] == a[i]) < co2ScrubberRating.Count(b => b[i] != a[i])) || (co2ScrubberRating.Count(b => b[i] == a[i]) == co2ScrubberRating.Count(b => b[i] != a[i])) && (a[i] == '0')).ToList();
                     i++;
                 }
 
