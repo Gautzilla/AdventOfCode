@@ -12,7 +12,7 @@ namespace AdventOfCode2021
     {
         static void Main(string[] args)
         {
-            Day3.Solve(2);
+            Day11.Solve(2);
             Console.ReadKey();
         }
     }
