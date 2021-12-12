@@ -24,7 +24,6 @@ namespace AdventOfCode2021
             map = new int[input[0].Length, input.Count()];
             flashMap = new bool[input[0].Length, input.Count()];
             flashes = 0;
-            int stepEverybodyFlashes = -1;
 
             for (int y = 0; y < map.GetLength(1); y++)
             {
@@ -37,8 +36,9 @@ namespace AdventOfCode2021
             int stepCount = 100;
             int step = 0;
 
-            while (stepEverybodyFlashes == -1)
+            while (true)
             {
+                step++;
                 flashMap = new bool[input[0].Length, input.Count()];
 
                 for (int y = 0; y < map.GetLength(1); y++)
@@ -48,6 +48,7 @@ namespace AdventOfCode2021
                         map[x, y]++;
                     }
                 }
+
                 for (int y = 0; y < map.GetLength(1); y++)
                 {
                     for (int x = 0; x < map.GetLength(0); x++)
@@ -56,23 +57,26 @@ namespace AdventOfCode2021
                     }
                 }
 
-                bool everybodyFlashes = true;
+                VisualizeMap(step);
 
-                for (int y = 0; y < map.GetLength(1); y++)
+                if (part == 1 && step == stepCount) break;
+
+                if (part == 2)
                 {
-                    for (int x = 0; x < map.GetLength(0); x++)
+                    bool everybodyFlashes = true;
+
+                    for (int y = 0; y < map.GetLength(1); y++)
                     {
-                        if (map[x, y] != 0) everybodyFlashes = false;
+                        for (int x = 0; x < map.GetLength(0); x++)
+                        {
+                            if (map[x, y] != 0) everybodyFlashes = false;
+                        }
                     }
+                    if (everybodyFlashes) break;
                 }
-                if (everybodyFlashes && (stepEverybodyFlashes == -1))
-                {
-                    stepEverybodyFlashes = step;
-                }
-                if (++step == stepCount && part == 1) break;
             }
 
-            Console.WriteLine($"{flashes} flashes. Everybody flashes on step {stepEverybodyFlashes + 1}");
+            Console.WriteLine($"{flashes} flashes. Everybody flashes on step {step}");
 
         }
 
@@ -91,6 +95,26 @@ namespace AdventOfCode2021
                         if (++map[x + i, y + j] > 9) Flash(x + i, y + j);
                     }
                 }
+            }
+        }
+
+        static void VisualizeMap(int step)
+        {
+            System.Threading.Thread.Sleep(40);
+            Console.SetCursorPosition(0, 0);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"STEP {step + 1} :\n");
+
+            ConsoleColor[] colors = { ConsoleColor.Red, ConsoleColor.DarkGray, ConsoleColor.Gray, ConsoleColor.White, ConsoleColor.DarkCyan, ConsoleColor.Blue, ConsoleColor.Cyan, ConsoleColor.Green, ConsoleColor.Yellow, ConsoleColor.Magenta };
+
+            for (int y = 0; y < map.GetLength(1); y++)
+            {
+                for (int x = 0; x < map.GetLength(0); x++)
+                {
+                    Console.ForegroundColor = colors[map[x, y]];
+                    Console.Write(map[x, y]);
+                }
+                Console.Write("\n");
             }
         }
     }
