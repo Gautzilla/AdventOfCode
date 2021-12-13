@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace AdventOfCode2021
 {
     class Day12
-    { 
+    {
         private class Cave
         {
             public string name { get; }
@@ -36,10 +36,19 @@ namespace AdventOfCode2021
             string filePath = @"..\..\Inputs\day12.txt";
 
             List<string> input = File.ReadAllLines(filePath).ToArray().ToList();
-            caves = new List<Cave>();
 
-            List<List<string>> paths = new List<List<string>>();
-            List<List<string>> completePaths = new List<List<string>>();
+            CreateCaves(input);
+
+            bool isPart2 = part == 2;
+
+            int paths = ComputePaths(caves.First(c => c.name == "start"), new List<string>() { "start" }, isPart2, false);
+
+            Console.WriteLine($"There are {paths} paths.");
+        }
+
+        private static void CreateCaves(List<string> input)
+        {
+            caves = new List<Cave>();
 
             foreach (string line in input)
             {
@@ -57,40 +66,31 @@ namespace AdventOfCode2021
                     }
                 }
             }
-
-            foreach (string startingCave in caves.First(c => c.name == "start").connectedCaves)
-            {
-                paths.Add(new List<string>() { "start", startingCave });
-            }
-
-
-            while (paths.Count() > 0)
-            {
-                List<List<string>> nextPaths = new List<List<string>>();
-
-                foreach (List<string> path in paths)
-                {
-                    if (path.Last() == "end") completePaths.Add(new List<string>(path));
-                    else if (path.Last() != "start") {
-                        foreach (string connectedCave in caves.First(c => c.name == path.Last()).connectedCaves)
-                        {
-                        if (caves.First(c => c.name == connectedCave).isLarge || ( !path.Contains(connectedCave) || part == 2 && CanVisitSmallCaveAgain(path)) )
-                            {
-                                nextPaths.Add(new List<string>(path));
-                                nextPaths.Last().Add(connectedCave);
-                            }
-                        }
-                    }
-                }
-                paths = nextPaths;
-            }
-
-            Console.WriteLine($"There are {completePaths.Count()} paths.");
         }
 
-        private static bool CanVisitSmallCaveAgain (List<string> path)
+        private static int ComputePaths(Cave currentCave, List<string> visitedCaves, bool isPart2, bool smallCaveVisitedTwice)
         {
-            return (!path.Where(c => !caves.First(d => d.name == c).isLarge).GroupBy(c => c).Any(g => g.Count() > 1));
+            int pathCount = 0;
+
+            foreach (string connectedCave in currentCave.connectedCaves)
+            {
+                if (connectedCave == "end")
+                {
+                    pathCount++;
+                }
+                else
+                {
+                    if (!visitedCaves.Contains(connectedCave) || Char.IsUpper(connectedCave[0]))
+                    {
+                        pathCount += ComputePaths(caves.First(c => c.name == connectedCave), visitedCaves.Append(connectedCave).ToList(), isPart2, smallCaveVisitedTwice);
+                    }
+                    else if (isPart2 && connectedCave != "start" && !smallCaveVisitedTwice && visitedCaves.Contains(connectedCave) && Char.IsLower(connectedCave[0]))
+                    {
+                        pathCount += ComputePaths(caves.First(c => c.name == connectedCave), visitedCaves.Append(connectedCave).ToList(), isPart2, true);
+                    }
+                }
+            }
+            return pathCount;
         }
     }
 }
