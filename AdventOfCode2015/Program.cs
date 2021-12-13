@@ -5,13 +5,13 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AdventOfCode2021
+namespace AdventOfCode2015
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Day13.Solve(2);
+            Day1.Solve(2);
             Console.ReadKey();
         }
     }
