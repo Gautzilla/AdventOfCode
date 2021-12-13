@@ -94,7 +94,7 @@ namespace AdventOfCode2021
         {
             for (int y = 0; y < page.GetLength(1); y++)
             {
-                for (int x = 0; x < page.GetLength(0); x++) Console.Write(page[x, y] ? "#" : "");
+                for (int x = 0; x < page.GetLength(0); x++) Console.Write(page[x, y] ? "#" : " ");
 
                 Console.Write("\n");
             }
