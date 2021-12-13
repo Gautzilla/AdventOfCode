@@ -11,10 +11,10 @@ namespace AdventOfCode2015
     {
         static public void Solve(int part)
         {
-            // string path = @"..\..\Inputs\day1Example.txt";
-            string path = @"..\..\..\Inputs\day1.txt";
+            // string filePath = @"..\..\Inputs\day1Example.txt";
+            string filePath = @"..\..\..\Inputs\day1.txt";
 
-            string input = File.ReadAllText(path);
+            string input = File.ReadAllText(filePath);
 
             int floor = input.Aggregate(0, (a, b) => b == '(' ? ++a : --a);
 
