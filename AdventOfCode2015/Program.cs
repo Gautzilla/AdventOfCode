@@ -11,7 +11,7 @@ namespace AdventOfCode2015
     {
         static void Main(string[] args)
         {
-            Day2.Solve(2);
+            Day3.Solve(2);
             Console.ReadKey();
         }
     }
