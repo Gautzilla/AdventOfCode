@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace AdventOfCode2021
 {
@@ -11,7 +11,11 @@ namespace AdventOfCode2021
     {
         static void Main(string[] args)
         {
-            Day14.Solve(2);
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            Day15.Solve(2);
+            stopWatch.Stop();
+            Console.WriteLine($"\nSolved in {stopWatch.ElapsedMilliseconds} ms");
             Console.ReadKey();
         }
     }
