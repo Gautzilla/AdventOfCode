@@ -11,7 +11,7 @@ namespace AdventOfCode2021
     {
         static public void Solve(int part)
         {
-            // string path = @"..\..\Inputs\day4Example.txt";
+            // string path = @"..\..\Inputs\day16Example.txt";
             string path = @"..\..\Inputs\day1.txt";
 
             List<int> input = File.ReadAllLines(path).Select(a => int.Parse(a)).ToList();
