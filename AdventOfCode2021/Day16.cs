@@ -9,13 +9,16 @@ namespace AdventOfCode2021
 {
     class Day16
     {
+        private static int puzzlePart;
         static public void Solve(int part)
         {
-            // string path = @"..\..\Inputs\day16Example.txt";
-            string path = @"..\..\Inputs\day16.txt";
+            // string filePath = @"..\..\Inputs\day16Example.txt";
+            string filePath = @"..\..\Inputs\day16.txt";
 
-            Console.WriteLine(AnalyzePacket(HexToBinary("EE00D40C823060"))[1]);
+            string input = File.ReadAllText(filePath);
 
+            puzzlePart = part;
+            Console.WriteLine(AnalyzePacket(HexToBinary(input))[1]); // Analyzis output : [0] packet length [1] packet output value
         }
 
         static private string HexToBinary(string hexString)
@@ -28,13 +31,30 @@ namespace AdventOfCode2021
             return binaryString;
         }
 
-        static private int[] AnalyzeLiteralValuePacket (string packet, int version, int iD)
+        static private long[] AnalyzePacket(string packet)
+        {
+            int version = Convert.ToInt32(new string(packet.Take(3).ToArray()), 2);
+            int iD = Convert.ToInt32(new string(packet.Skip(3).Take(3).ToArray()), 2);
+
+            packet = new string(packet.Skip(6).ToArray());
+
+            if (iD == 4)
+            {
+                return AnalyzeLiteralValuePacket(packet, version);
+            }
+            else
+            {
+                return AnalyzeOperatorPacket(packet, version, iD);
+            }
+        }
+
+        static private long[] AnalyzeLiteralValuePacket (string packet, int version)
         {
             string value = "";
             bool lastGroupFound = false;
             int i = 0;
 
-            int[] output = new int[2];
+            long[] output = new long[2];
 
             while (!lastGroupFound)
             {
@@ -44,55 +64,69 @@ namespace AdventOfCode2021
                 i++;
             }
 
-            output[0] = 6 + 5*i; // Packet length
-            output[1] = Convert.ToInt32(value, 2);
+            output[0] = 6 + 5*i; // Packet length : 6 header bits + value bits
+
+            if (puzzlePart == 1) output[1] = version;
+            else output[1] = Convert.ToInt64(value, 2);
 
             return (output);
         }
 
-        static private int[] AnalyzeOperatorPacket (string packet, int version, int iD)
+        static private long[] AnalyzeOperatorPacket (string packet, int version, int iD)
         {
             int subPacketsCountLength = packet[0] == '0' ? 15 : 11;
 
-            int[] output = new int[2];
+            long[] output = new long[2];
 
-            List<int[]> outputs = new List<int[]>();
+            List<long[]> outputs = new List<long[]>();
 
-            int subPacketsCount = Convert.ToInt32(new string(packet.Skip(1).Take(subPacketsCountLength).ToArray()), 2);
-
+            int subPacketsLength = Convert.ToInt32(new string(packet.Skip(1).Take(subPacketsCountLength).ToArray()), 2);
+            int subPacketsCount = 0;
             
-            int packetLength = subPacketsCountLength + 1;
+            int packetLength = subPacketsCountLength + 1; // Before adding each subPacket's length
 
             packet = new string (packet.Skip(packetLength).ToArray());
 
-            for (int i = 0; i < subPacketsCount; i ++)
+            int i = 0;
+            while (subPacketsCount < subPacketsLength)
             {
                 outputs.Add(AnalyzePacket(packet));
-                packet = new string (packet.Skip(outputs[i][1]).ToArray());
-                packetLength += outputs[i][0];
+                packet = new string(packet.Skip((int)outputs[i][0]).ToArray());
+                packetLength += (int)outputs[i][0];
+
+                subPacketsCount += subPacketsCountLength == 15 ? (int)outputs[i][0] : 1; // SubPackets count method changes: whether total bits number or total subpackets number
+                i++;
             }
 
-            output[0] = outputs.Sum(o => o[0]);
-            output[1] = packetLength;
+            output[0] = packetLength + 6; // PacketLength + 6 header bits removed in previous Analysis method
 
-            return output;
-        }
-
-        static private int[] AnalyzePacket (string packet)
-        {
-            int version = Convert.ToInt32( new string(packet.Take(3).ToArray()), 2);
-            int iD = Convert.ToInt32( new string(packet.Skip(3).Take(3).ToArray()), 2);
-
-            packet = new string(packet.Skip(6).ToArray());
-
-            int[] output = new int[2];
-
-            if (iD == 4)
+            if (puzzlePart == 1) output[1] = outputs.Sum(o => o[1]) + version;
+            else
             {
-                output = AnalyzeLiteralValuePacket(packet, version, iD);
-            } else
-            {
-                output = AnalyzeOperatorPacket(packet, version, iD);
+                switch (iD)
+                {
+                    case 0:
+                        output[1] = outputs.Sum(o => o[1]);
+                        break;
+                    case 1:
+                        output[1] = outputs.Aggregate((long)1, (a,o) => a*o[1]);
+                        break;
+                    case 2:
+                        output[1] = outputs.Min(o => o[1]);
+                        break;
+                    case 3:
+                        output[1] = outputs.Max(o => o[1]);
+                        break;
+                    case 5:
+                        output[1] = outputs[0][1] > outputs[1][1] ? 1 : 0;
+                        break;
+                    case 6:
+                        output[1] = outputs[0][1] < outputs[1][1] ? 1 : 0;
+                        break;
+                    case 7:
+                        output[1] = outputs[0][1] == outputs[1][1] ? 1 : 0;
+                        break;
+                }
             }
 
             return output;
