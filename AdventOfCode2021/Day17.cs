@@ -36,7 +36,7 @@ namespace AdventOfCode2021
             {
                 int initYVel = yMin; // Probe shot directly to the bottom of the target after 1st step
 
-                while (true) // yVel
+                while (initYVel <= Math.Abs(yMin)) // Must not overshoot in Y
                 {
                     int n = 0;
                     int xVel = initXVel;
@@ -50,7 +50,7 @@ namespace AdventOfCode2021
 
                     int highestY = 0;
 
-                    while (true) // steps n
+                    while (yPos >= yMin) // steps n
                     {
                         xPos += xVel;
                         xVel -= xVel > 0 ? 1 : 0;
@@ -71,10 +71,10 @@ namespace AdventOfCode2021
                                 }
                                 targetFound = true;
                             }
-                        } if (yPos < yMin) break; // fallen too low
+                        }
                         n++;
                     }
-                    if (initYVel++ > 200) break;
+                    initYVel++;
                     }
             }
 
