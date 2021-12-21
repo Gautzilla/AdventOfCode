@@ -38,7 +38,7 @@ namespace AdventOfCode2021
                 return new SnailfishNumber() { isPrimary = true, value = i };
             }
 
-            public string ReduceSnailfishNumber()
+            public string ReduceSnailfishNumber() // Used string representation of snailfish nubmers for reduction
             {
                 string numberToReduce = DisplaySnailfishNumber();
 
@@ -71,7 +71,7 @@ namespace AdventOfCode2021
 
                 bool explodeNumber = false;
 
-                int i = 0;
+                int i = 0; // Index of the right number of exploding number
                 int level = 0;
 
                 foreach (char c in stringNumber)
@@ -110,8 +110,7 @@ namespace AdventOfCode2021
                     int leftNumberSize;
                     int rightNumberSize;
 
-
-                    if (int.TryParse(new string(stringNumber.Skip(i-3).Take(2).ToArray()), out int leftNumberInt))
+                    if (int.TryParse(new string(stringNumber.Skip(i-3).Take(2).ToArray()), out int leftNumberInt)) // Test for numbers > 9
                     {
                         leftNumberSize = 2;
                         leftNumber = leftNumberInt.ToString();
@@ -131,7 +130,7 @@ namespace AdventOfCode2021
                         rightNumber = stringNumber[i].ToString();
                     }
 
-                    for (int j = i+rightNumberSize; j < stringNumber.Length; j++) if(int.TryParse(stringNumber[j].ToString(), out int numValue))
+                    for (int j = i+rightNumberSize; j < stringNumber.Length; j++) if(int.TryParse(stringNumber[j].ToString(), out int numValue)) // Adds right number to first number to the right
                      {
                         int numberToReplaceSize;
                         int sum;
@@ -149,9 +148,9 @@ namespace AdventOfCode2021
                         break;
                     }
 
-                    stringNumber = stringNumber.Remove(i-(2+leftNumberSize), 3+rightNumberSize+leftNumberSize).Insert(i-(2+leftNumberSize), "0");
+                    stringNumber = stringNumber.Remove(i-(2+leftNumberSize), 3+rightNumberSize+leftNumberSize).Insert(i-(2+leftNumberSize), "0"); // Replaces pair by number 0
 
-                    for (int j = i-(3+leftNumberSize); j >=0; j--) if(int.TryParse(stringNumber[j].ToString(), out int numValue))
+                    for (int j = i-(3+leftNumberSize); j >=0; j--) if(int.TryParse(stringNumber[j].ToString(), out int numValue)) // Adds left number to first number to the left
                      {
                         int numberToReplaceSize;
                         int sum;
@@ -189,7 +188,7 @@ namespace AdventOfCode2021
                         case ',':
                             largeNumber = false;
                             break;
-                        default :
+                        default : // Searches for 2 digit numbers (> 9)
                             if (largeNumber) splitNumber = true;
                             largeNumber = true;
                             break;
@@ -201,6 +200,7 @@ namespace AdventOfCode2021
                 if (splitNumber)
                 {
                     int numberToSplit = int.Parse(new string (stringNumber.Skip(i-1).Take(2).ToArray()));
+
                     int leftSplitNumber = numberToSplit / 2;
                     int rightSplitNumber = numberToSplit % 2 == 0 ? numberToSplit / 2 : numberToSplit / 2 + 1;
 
