@@ -14,7 +14,7 @@ namespace AdventOfCode2021
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            Day20.Solve(2);
+            Day21.Solve(1);
 
             stopWatch.Stop();
             Console.WriteLine($"\nSolved in {stopWatch.ElapsedMilliseconds} ms");
