@@ -11,23 +11,13 @@ namespace AdventOfCode2022
     {
         public static void Solve(int part)
         {
-            int max = 0;
-
-            if (part == 1) max = String.Join("-", File.ReadAllLines("Day1\\day1Input1.txt"))
-            .Split("--") // Split elves
-            .Select(elve => elve.Split("-")) // Split foods
-            .Select(cals => cals.Sum(cal => int.Parse(cal)))
-            .Max();
-
-            else max = String.Join("-", File.ReadAllLines("Day1\\day1Input1.txt"))
-            .Split("--") // Split elves
-            .Select(elve => elve.Split("-")) // Split foods
-            .Select(cals => cals.Sum(cal => int.Parse(cal)))
+            List<int> calories = File.ReadAllText(@"Day1\day1Input1.txt")
+            .Split("\r\n\r\n") // Splits elves
+            .Select(elf => elf.Split("\r\n").Sum(cal => int.Parse(cal))) // Sums each elf's cals
             .OrderByDescending(totCal => totCal)
-            .Take(3)
-            .Sum();
-
-            Console.WriteLine(max);
+            .ToList();
+            
+            Console.WriteLine(part == 1 ? calories.First() : calories.Take(3).Sum());
         }
     }
 }
