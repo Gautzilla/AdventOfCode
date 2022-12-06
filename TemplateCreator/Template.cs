@@ -11,7 +11,7 @@ namespace AdventOfCode
     {
         public static void Solve(int part)
         { 
-            
+            string[] input = File.ReadAllLines(@"Day\input.txt");
         }
     }
 }
