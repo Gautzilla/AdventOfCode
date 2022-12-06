@@ -16,7 +16,7 @@ namespace AdventOfCode2022
 
             for (int i = 0; i < input.Length-bufferSize; i++)
             {
-                if (input.Skip(i).Take(bufferSize).GroupBy(c => c).Count() == bufferSize)
+                if (input.Skip(i).Take(bufferSize).Distinct().Count() == bufferSize)
                 {
                     Console.WriteLine(i+bufferSize);
                     return;
