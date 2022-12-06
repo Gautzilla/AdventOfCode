@@ -20,7 +20,7 @@ namespace AdventOfCode2022
                 return;
             }
 
-            if (int.TryParse(args.First(), out int part) && part == 1 || part == 2) Day3.Solve(part);
+            if (int.TryParse(args.First(), out int part) && part == 1 || part == 2) Day4.Solve(part);
             else
             {
                 Console.WriteLine("Part should be 1 or 2.");
