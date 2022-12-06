@@ -12,22 +12,19 @@ namespace AdventOfCode2022
         static void Main(string[] args)
         {
             Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-            
-            if (args.Length == 0)
+            Console.WriteLine("Part:");
+            if (int.TryParse(Console.ReadLine(), out int part) && part == 1 || part == 2) 
             {
-                Console.WriteLine("Please enter the part of the problem to solve.");
-                return;
+                stopWatch.Start();
+                Day5.Solve(part);
+                stopWatch.Stop();
             }
-
-            if (int.TryParse(args.First(), out int part) && part == 1 || part == 2) Day5.Solve(part);
             else
             {
                 Console.WriteLine("Part should be 1 or 2.");
                 return;
             }
 
-            stopWatch.Stop();
             Console.WriteLine($"\nSolved in {stopWatch.ElapsedMilliseconds} ms");
         }
     }
