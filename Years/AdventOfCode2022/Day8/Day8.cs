@@ -31,7 +31,7 @@ namespace AdventOfCode2022
 
         private static bool IsVisible(int x, int y)
         {
-            if (x == 0 || x == _map[0].Length || y == 0 || y == _map.Length) return true;
+            if (IsEdgeOfMap(x,y)) return true;
 
             var lines = GetLines(x ,y);
             int height = _map[y][x];
@@ -51,6 +51,8 @@ namespace AdventOfCode2022
 
         private static int ScenicScore(int x, int y)
         {
+            if (IsEdgeOfMap(x,y)) return 0;
+            
             var lines = GetLines(x, y);
             int height = _map[y][x];
 
@@ -62,13 +64,18 @@ namespace AdventOfCode2022
 
         private static int ScenicScoreInLine(List<int> line, int pos, int height)
         {
-            List<int> visibleTreesBefore = line.Take(pos).Reverse().TakeWhile(tree => tree < height).ToList();
-            if (visibleTreesBefore.Count < line.Take(pos).Reverse().Count()) visibleTreesBefore.Add(line.Take(pos).Reverse().First(tree => tree >= height)); // First tree that blocks line of sight is visible
+            List<int> alignedTreesBefore = line.Take(pos).Reverse().ToList();
+            List<int> alignedTreesAfter = line.Skip(pos+1).ToList();
 
-            List<int> visibleTreesAfter = line.Skip(pos+1).TakeWhile(tree => tree < height).ToList();
-            if (visibleTreesAfter.Count < line.Skip(pos+1).Count()) visibleTreesAfter.Add(line.Skip(pos+1).First(tree => tree >= height)); // First tree that blocks line of sight is visible
+            return ScenicScoreInDirection(alignedTreesBefore, height) * ScenicScoreInDirection(alignedTreesAfter, height);
+        }
 
-            return visibleTreesAfter.Count() * visibleTreesBefore.Count();
+        private static int ScenicScoreInDirection(List<int> alignedTrees, int height)
+        {
+            List<int> visibleTrees = alignedTrees.TakeWhile(tree => tree < height).ToList();
+            if (visibleTrees.Count < alignedTrees.Count()) visibleTrees.Add(alignedTrees.First(tree => tree >= height)); // First tree that blocks line of sight is visible
+        
+            return visibleTrees.Count();
         }
 
         private static (List<int> row, List<int> column) GetLines(int x, int y)
@@ -78,5 +85,7 @@ namespace AdventOfCode2022
 
             return (row, column);
         }
+
+        private static bool IsEdgeOfMap(int x, int y) => x == 0 || x == _map[0].Length || y == 0 || y == _map.Length;
     }
 }
