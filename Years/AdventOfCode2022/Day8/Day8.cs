@@ -40,12 +40,20 @@ namespace AdventOfCode2022
         {
             if (x == 0 || x == _map[0].Length || y == 0 || y == _map.Length) return true;
 
-            if (_map[y].Take(x).All(tree => tree < _map[y][x])) return true;
-            if (_map[y].Skip(x+1).All(tree => tree < _map[y][x])) return true;
+            List<int> row = _map[y].ToList();
+            List<int> column = _map.SelectMany(rows => rows.Where((v, xTree) => xTree == x)).ToList();
+            int height = _map[y][x];
 
-            if (_map.SelectMany(rows => rows.Where((v, xTree) => xTree == x)).Take(y).All(tree => tree < _map[y][x])) return true;
-            if (_map.SelectMany(rows => rows.Where((v, xTree) => xTree == x)).Skip(y+1).All(tree => tree < _map[y][x])) return true;
+            if (IsVisibleInRow(row, x, height)) return true;
+            if (IsVisibleInRow(column, y, height)) return true;
+            
+            return false;
+        }
 
+        private static bool IsVisibleInRow(List<int> row, int pos, int height)
+        {
+            if (row.Take(pos).All(tree => tree < height)) return true;
+            if (row.Skip(pos+1).All(tree => tree < height)) return true;
             return false;
         }
     }
