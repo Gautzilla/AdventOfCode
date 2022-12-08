@@ -16,7 +16,6 @@ namespace AdventOfCode2022
         public static void Solve(int part)
         { 
             int maxScenicScore = int.MinValue;
-
             for (int y = 0; y < _map.Length; y++)
             {
                 for (int x = 0; x < _map[0].Length; x++)
@@ -33,59 +32,73 @@ namespace AdventOfCode2022
         {
             if (IsEdgeOfMap(x,y)) return true;
 
-            var lines = GetLines(x ,y);
-            int height = _map[y][x];
+            bool isHidden = false;
 
-            if (IsVisibleInLine(lines.row, x, height)) return true;
-            if (IsVisibleInLine(lines.column, y, height)) return true;
+            //LEFT
+            for (int i = x-1; i >= 0; i--) if (_map[y][i] >= _map[y][x]) {isHidden = true; break;}
+            if (!isHidden) return true;
+            isHidden = false;
+
+            //RIGHT
+            for (int i = x+1; i < _map[0].Length; i++) if (_map[y][i] >= _map[y][x]) {isHidden = true; break;}
+            if (!isHidden) return true;
+            isHidden = false;
+
+            //UP
+            for (int j = y-1; j >= 0; j--) if (_map[j][x] >= _map[y][x]) {isHidden = true; break;}
+            if (!isHidden) return true;
+            isHidden = false;
+
+            //DOWN
+            for (int j = y+1; j < _map.Length; j++) if (_map[j][x] >= _map[y][x]) {isHidden = true; break;}
+            if (!isHidden) return true;
             
-            return false;
-        }
-
-        private static bool IsVisibleInLine(List<int> line, int pos, int height)
-        {
-            if (line.Take(pos).All(tree => tree < height)) return true;
-            if (line.Skip(pos+1).All(tree => tree < height)) return true;
             return false;
         }
 
         private static int ScenicScore(int x, int y)
         {
             if (IsEdgeOfMap(x,y)) return 0;
+
+            int[] scores = new int[4];
             
-            var lines = GetLines(x, y);
-            int height = _map[y][x];
+            //LEFT
+            for (int i = x-1; i >= 0; i--) 
+            {
+                scores[0]++;
+                if(_map[y][i] >= _map[y][x]) break;
+            }
 
-            int scenicScore = ScenicScoreInLine(lines.row, x, height);
-            scenicScore *= ScenicScoreInLine(lines.column, y, height);
+            if(scores[0] == 0) return 0;
 
-            return scenicScore;
+            //RIGHT
+            for (int i = x+1; i < _map[0].Length; i++) 
+            {
+                scores[1]++;
+                if (_map[y][i] >= _map[y][x]) break;
+            }
+
+            if(scores[1] == 0) return 0;
+
+            //UP
+            for (int j = y-1; j >= 0; j--) 
+            {
+                scores[2]++;
+                if (_map[j][x] >= _map[y][x]) break;
+            }
+
+            if(scores[2] == 0) return 0;
+
+            //DOWN
+            for (int j = y+1; j < _map.Length; j++) 
+            {
+                scores[3]++;
+                if (_map[j][x] >= _map[y][x]) break;
+            }
+
+            return scores.Aggregate((a,b) => a*b);
         }
 
-        private static int ScenicScoreInLine(List<int> line, int pos, int height)
-        {
-            List<int> alignedTreesBefore = line.Take(pos).Reverse().ToList();
-            List<int> alignedTreesAfter = line.Skip(pos+1).ToList();
-
-            return ScenicScoreInDirection(alignedTreesBefore, height) * ScenicScoreInDirection(alignedTreesAfter, height);
-        }
-
-        private static int ScenicScoreInDirection(List<int> alignedTrees, int height)
-        {
-            List<int> visibleTrees = alignedTrees.TakeWhile(tree => tree < height).ToList();
-            if (visibleTrees.Count < alignedTrees.Count()) visibleTrees.Add(alignedTrees.First(tree => tree >= height)); // First tree that blocks line of sight is visible
-        
-            return visibleTrees.Count();
-        }
-
-        private static (List<int> row, List<int> column) GetLines(int x, int y)
-        {
-            List<int> row = _map[y].ToList();
-            List<int> column = _map.SelectMany(rows => rows.Where((v, xTree) => xTree == x)).ToList();
-
-            return (row, column);
-        }
-
-        private static bool IsEdgeOfMap(int x, int y) => x == 0 || x == _map[0].Length || y == 0 || y == _map.Length;
+        private static bool IsEdgeOfMap(int x, int y) => x == 0 || x == _map[0].Length-1 || y == 0 || y == _map.Length-1;
     }
 }
