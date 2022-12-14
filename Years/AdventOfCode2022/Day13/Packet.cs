@@ -33,11 +33,20 @@ namespace AdventOfCode2022
             get { return parent; }
             set { parent = value; }
         }         
+
+        private string display;
+        public string Display
+        {
+            get { return display; }
+            set { display = value; }
+        }
+        
         
         public Packet(string packet, Packet? Parent)
         {
             content = new();
             isNumber = false;
+            display = packet;
 
             if (int.TryParse(packet, out int value)) this.Value = value;
             else ParseContent(packet);
@@ -63,5 +72,31 @@ namespace AdventOfCode2022
             }
             if (part != string.Empty) content.Add(new Packet(part, this));
         }
+
+        public bool IsGreaterThan(Packet other)
+        {
+            for (int packet = 0; packet < this.content.Count; packet++)
+            {
+                if (this.Content[packet].IsNumber && other.Content[packet].IsNumber)
+                {
+                    int thisVal = this.Content[packet].Value;
+                    int otherVal = other.Content[packet].Value;
+
+                    if (thisVal == otherVal) continue;
+                    
+                    return thisVal > otherVal;
+                }
+
+                if (!this.Content[packet].IsNumber && !other.Content[packet].IsNumber)
+                {
+                    if (this.Content[packet].IsEqualTo(other.Content[packet])) continue;
+                    return this.Content[packet].IsGreaterThan(other.Content[packet]);
+                }
+
+                
+            }
+        }
+
+        public bool IsEqualTo(Packet other) => this.Display == other.Display;
     }
 }
