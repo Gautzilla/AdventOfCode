@@ -12,37 +12,26 @@ namespace AdventOfCode2022
             get { return content; }
             set { content = value; }
         }
-
         private int value;
         public int Value
         {
             get { return value; }
             set { this.value = value; isNumber = true; }
         }
-
         private bool isNumber;
         public bool IsNumber
         {
             get { return isNumber; }
             set { isNumber = value; }
         }
-        
-        private Packet? parent;
-        public Packet? Parent
-        {
-            get { return parent; }
-            set { parent = value; }
-        }         
-
         private string display;
         public string Display
         {
             get { return display; }
             set { display = value; }
         }
-        
-        
-        public Packet(string packet, Packet? Parent)
+
+        public Packet(string packet)
         {
             content = new();
             isNumber = false;
@@ -51,7 +40,6 @@ namespace AdventOfCode2022
             if (int.TryParse(packet, out int value)) this.Value = value;
             else ParseContent(packet);
         }
-
         private void ParseContent(string packet)
         {
             int innerIndex = 0;
@@ -64,37 +52,58 @@ namespace AdventOfCode2022
                 
                 if (c == ',' && innerIndex == 0)
                 {
-                    content.Add(new Packet(part, this));
+                    content.Add(new Packet(part));
                     part = string.Empty;
                     continue;
                 }
                 part += c;
             }
-            if (part != string.Empty) content.Add(new Packet(part, this));
+            if (part != string.Empty) content.Add(new Packet(part));
         }
-
         public bool IsGreaterThan(Packet other)
         {
-            for (int packet = 0; packet < this.content.Count; packet++)
+            for (int packet = 0; packet < Math.Max(this.content.Count, other.Content.Count); packet++)
             {
-                if (this.Content[packet].IsNumber && other.Content[packet].IsNumber)
-                {
-                    int thisVal = this.Content[packet].Value;
-                    int otherVal = other.Content[packet].Value;
+                // Packet runs out of items
+                if (packet == this.Content.Count) return false; 
+                if (packet == other.Content.Count) return true;
 
-                    if (thisVal == otherVal) continue;
-                    
-                    return thisVal > otherVal;
+                Packet thisItem = this.Content[packet];
+                Packet otherItem = other.Content[packet];
+
+                // Both items are numbers
+                if (thisItem.IsNumber && otherItem.IsNumber)
+                {
+                    if (thisItem.Value == otherItem.Value) continue;                    
+                    return thisItem.Value > otherItem.Value;
                 }
 
-                if (!this.Content[packet].IsNumber && !other.Content[packet].IsNumber)
+                // Both items are lists
+                if (!thisItem.IsNumber && !otherItem.IsNumber)
                 {
-                    if (this.Content[packet].IsEqualTo(other.Content[packet])) continue;
-                    return this.Content[packet].IsGreaterThan(other.Content[packet]);
+                    if (thisItem.IsEqualTo(otherItem)) continue;
+                    return thisItem.IsGreaterThan(otherItem);
                 }
 
-                
+                // Only one is a number
+                Packet item1 = new("[]");
+                Packet item2 = new("[]");
+                if (thisItem.IsNumber)
+                {
+                    item1 = new Packet($"[{thisItem.Value}]");
+                    item2 = otherItem;
+                }
+                else 
+                {
+                    item1 = thisItem;
+                    item2 = new Packet($"[{otherItem.Value}]");
+                }
+
+                if (item1.IsEqualTo(item2)) continue;
+                return item1 .IsGreaterThan(item2);
             }
+
+            return true;
         }
 
         public bool IsEqualTo(Packet other) => this.Display == other.Display;
