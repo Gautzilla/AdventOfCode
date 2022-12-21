@@ -24,9 +24,15 @@ namespace AdventOfCode2022
                 HashSet<HashSet<int>> intersections = _sensors.Select(s => s.IntersectionsWithLine(yLine)).Where(i => i.Count > 0).ToHashSet();
                 var spotsWithoutBeacons = ConcatLines(intersections);
                 Console.WriteLine(spotsWithoutBeacons.Sum(spot => spot.x2 - spot.x1 + 1) - _sensors.Select(s => s.Beacon).Distinct().Count(b => b.y == yLine));
-            } else // Must look for crossings between sides of all rhombuses or something
+            } else // Still brute: I must look for crossings between sides of all rhombuses or something
             {
-                
+                for (int y = 0; y <= 4000000; y++)
+                {
+                    HashSet<HashSet<int>> intersections = _sensors.Select(s => s.IntersectionsWithLine(y)).Where(i => i.Count > 0).ToHashSet();
+                    var spotsWithoutBeacons = ConcatLines(intersections);
+                    if(spotsWithoutBeacons.Count == 1) continue;
+                    Console.WriteLine(((long)spotsWithoutBeacons.First().x2 + 1) * 4000000 + y);
+                }
             }
         }
 
@@ -52,7 +58,7 @@ namespace AdventOfCode2022
 
             for (int i = 0; i < lines.Count; i++)
             {
-                if (orderedLines[i].Min() > x2)
+                if (orderedLines[i].Min() > x2 + 1)
                 {
                     output.Add((x1, x2));
                     x1 = orderedLines[i].Min();
