@@ -32,6 +32,7 @@ namespace AdventOfCode2022
                     var spotsWithoutBeacons = ConcatLines(intersections);
                     if(spotsWithoutBeacons.Count == 1) continue;
                     Console.WriteLine(((long)spotsWithoutBeacons.First().x2 + 1) * 4000000 + y);
+                    return;
                 }
             }
         }
