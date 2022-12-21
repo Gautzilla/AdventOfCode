@@ -17,18 +17,13 @@ namespace AdventOfCode2022
 
             foreach (var line in input) ParseSensor(line);
 
-            if (part == 1) // Dirty brute force
+            if (part == 1) 
             {
-                int minX = _sensors.Min(s => s.Coord.x - s.HalfWidth);
-                int maxX = _sensors.Max(s => s.Coord.x + s.HalfWidth);
-                int y = 2000000;
-                int emptySpots = 0;
-                for (int x = minX; x < maxX; x++)
-                {
-                    if (_sensors.Any(s => s.Beacon == (x,y))) continue;
-                    if (_sensors.Any(s => s.IsWithinRhombus((x,y)))) emptySpots++;
-                }
-            Console.WriteLine(emptySpots);
+                int yLine = 2000000;
+
+                HashSet<HashSet<int>> intersections = _sensors.Select(s => s.IntersectionsWithLine(yLine)).Where(i => i.Count > 0).ToHashSet();
+                var spotsWithoutBeacons = ConcatLines(intersections);
+                Console.WriteLine(spotsWithoutBeacons.Sum(spot => spot.x2 - spot.x1 + 1) - _sensors.Select(s => s.Beacon).Distinct().Count(b => b.y == yLine));
             } else // Must look for crossings between sides of all rhombuses or something
             {
                 
@@ -45,6 +40,30 @@ namespace AdventOfCode2022
             int yB = int.Parse(m.Groups["yB"].Value);
 
             _sensors.Add(new Sensor((xS, yS), (xB, yB)));
+        }
+
+        private static HashSet<(int x1, int x2)> ConcatLines(HashSet<HashSet<int>> lines)
+        {
+            HashSet<(int x1, int x2)> output = new();
+            var orderedLines = lines.OrderBy(l => l.Min(c => c)).ToList();
+
+            int x1 = orderedLines.First().Min();
+            int x2 = orderedLines.First().Max();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (orderedLines[i].Min() > x2)
+                {
+                    output.Add((x1, x2));
+                    x1 = orderedLines[i].Min();
+                    x2 = orderedLines[i].Max();
+                }
+
+                x1 = Math.Min(x1,orderedLines[i].Min());
+                x2 = Math.Max(x2,orderedLines[i].Max());
+            }
+            output.Add((x1,x2));
+            return output;
         }
 
     }
