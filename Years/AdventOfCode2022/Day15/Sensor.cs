@@ -43,8 +43,6 @@ namespace AdventOfCode2022
 
         private static int ManhattanDistance((int x, int y) c1, (int x, int y) c2) => Math.Abs(c1.x - c2.x) + Math.Abs(c1.y - c2.y);
     
-        public bool IsWithinRhombus((int x, int y) coord) => ManhattanDistance(this.coord, coord) <= halfWidth;
-    
         public HashSet<int> IntersectionsWithLine(int y)
         {
             HashSet<int> output = new();
