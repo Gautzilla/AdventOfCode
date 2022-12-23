@@ -17,8 +17,9 @@ namespace AdventOfCode2022
 
             CreateValves(input);
             foreach (Valve valve in _valves) valve.ComputeDistances(_valves);
-            
-            Console.WriteLine(String.Join("\n", _valves.Single(v => v.Name == "AA").ValveDistance.Select(vd => $"{vd.Key.Name} : {vd.Value}")));
+
+            Dictionary<Valve, HashSet<Valve>> dic = new();
+            Console.WriteLine(_valves.Single(v => v.Name == "AA").BestMove(new(), 0, 0, 30));        
         }
 
         private static void CreateValves(string[] input)
