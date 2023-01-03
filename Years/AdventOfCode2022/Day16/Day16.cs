@@ -17,9 +17,12 @@ namespace AdventOfCode2022
 
             CreateValves(input);
             foreach (Valve valve in _valves) valve.ComputeDistances(_valves);
-
-            Dictionary<Valve, HashSet<Valve>> dic = new();
-            Console.WriteLine(_valves.Single(v => v.Name == "AA").BestMove(new(), 0, 0, 30));        
+            
+            if (part == 1)Console.WriteLine(BestMove(_valves.Single(v => v.Name == "AA"), new(), 0, 0, 30));        
+            else
+            {
+                Valve start = _valves.Single(v => v.Name == "AA");
+            }
         }
 
         private static void CreateValves(string[] input)
@@ -44,6 +47,31 @@ namespace AdventOfCode2022
                 Valve[] tunnels = kvp.Value.Split(", ").Select(s => _valves.Single(v => v.Name == s)).ToArray();
                 foreach (Valve tunnel in tunnels) valve.AddTunnel(tunnel);
             }
+        }
+
+        private static int BestMove(Valve current, HashSet<Valve> openedValves, int releasedPresure, int flowRate, int remainingTime)
+        {
+            //OPEN (not for AA if its flowRate == 0)
+            if (current.FlowRate > 0)
+            {
+                openedValves = openedValves.Append(current).ToHashSet();
+                releasedPresure += flowRate;
+                flowRate += current.FlowRate;
+                remainingTime--;
+            }
+
+            //WAIT (no remaining valve to open at reach)
+            if (openedValves.Contains(current) && current.ValveDistance.Where(v => v.Value < remainingTime).All(v => openedValves.Contains(v.Key))) return releasedPresure + remainingTime * flowRate;
+
+            //MOVE
+            int maxPresure = releasedPresure;
+            foreach (var tunnel in current.ValveDistance.Where(t => t.Value < remainingTime).Where(t => !openedValves.Contains(t.Key)))
+            {              
+                int presure = releasedPresure + flowRate * tunnel.Value;
+                maxPresure = Math.Max(maxPresure, BestMove(tunnel.Key, new(openedValves), presure, flowRate, remainingTime - tunnel.Value));
+            }
+            
+            return maxPresure;
         }
     }
 }
