@@ -18,10 +18,10 @@ namespace AdventOfCode2022
             CreateValves(input);
             foreach (Valve valve in _valves) valve.ComputeDistances(_valves);
             
-            if (part == 1)Console.WriteLine(BestMove(_valves.Single(v => v.Name == "AA"), new(), 0, 0, 30));        
+            if (part == 1) Console.WriteLine(BestMove(_valves.Single(v => v.Name == "AA"), new(), 0, 0, 30, true));        
             else
             {
-                Valve start = _valves.Single(v => v.Name == "AA");
+                Console.WriteLine(BestMove(_valves.Single(v => v.Name == "AA"), new(), 0, 0, 26, false));        
             }
         }
 
@@ -49,7 +49,7 @@ namespace AdventOfCode2022
             }
         }
 
-        private static int BestMove(Valve current, HashSet<Valve> openedValves, int releasedPresure, int flowRate, int remainingTime)
+        private static int BestMove(Valve current, HashSet<Valve> openedValves, int releasedPresure, int flowRate, int remainingTime, bool isLastRun)
         {
             //OPEN (not for AA if its flowRate == 0)
             if (current.FlowRate > 0)
@@ -58,18 +58,24 @@ namespace AdventOfCode2022
                 releasedPresure += flowRate;
                 flowRate += current.FlowRate;
                 remainingTime--;
-            }
 
-            //WAIT (no remaining valve to open at reach)
-            if (openedValves.Contains(current) && current.ValveDistance.Where(v => v.Value < remainingTime).All(v => openedValves.Contains(v.Key))) return releasedPresure + remainingTime * flowRate;
+                // WAIT IF NO MORE REACHABLE VALVE
+                if (current.ValveDistance.Where(v => v.Value < remainingTime).All(v => openedValves.Contains(v.Key))) 
+                {
+                    return releasedPresure + remainingTime * flowRate + (isLastRun ? 0 : BestMove(_valves.Single(v => v.Name == "AA"), new(openedValves), 0, 0, 26, true));
+                }
+            }
 
             //MOVE
             int maxPresure = releasedPresure;
             foreach (var tunnel in current.ValveDistance.Where(t => t.Value < remainingTime).Where(t => !openedValves.Contains(t.Key)))
             {              
                 int presure = releasedPresure + flowRate * tunnel.Value;
-                maxPresure = Math.Max(maxPresure, BestMove(tunnel.Key, new(openedValves), presure, flowRate, remainingTime - tunnel.Value));
+                maxPresure = Math.Max(maxPresure, BestMove(tunnel.Key, new(openedValves), presure, flowRate, remainingTime - tunnel.Value, isLastRun));
             }
+
+            // With elephant: it might be advantageous to stay at current position and wait for the elephant to do stuff
+            if (!isLastRun) maxPresure = Math.Max(maxPresure, releasedPresure + remainingTime * flowRate + BestMove(_valves.Single(v => v.Name == "AA"), new(openedValves), 0, 0, 26, true));
             
             return maxPresure;
         }
