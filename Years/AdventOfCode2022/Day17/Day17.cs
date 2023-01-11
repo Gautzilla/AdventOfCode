@@ -19,6 +19,7 @@ namespace AdventOfCode2022
 
         private static HashSet<(int x, int y)> _occupied = new();
         private static readonly string _jetPattern = File.ReadAllText(@"Day17\input.txt");
+        private static int _height = 0;
         private static int _jetState = 0; 
 
         private static int _deltaY = 0;
@@ -42,9 +43,11 @@ namespace AdventOfCode2022
                 {
                     // Add pattern deltaY
                 }
+
+                RemoveBottom(10);
             }
 
-            Console.WriteLine(Math.Abs(_occupied.Min(o => o.y)));
+            Console.WriteLine(Math.Abs(_occupied.Min(o => o.y) + _height));
         }
 
         private static void Fall((int x, int y)[] rock)
@@ -59,6 +62,7 @@ namespace AdventOfCode2022
             if (rock.Any(p => p.y == -1) || rock.Any(p => _occupied.Contains((p.x, p.y+1))))
             {
                 StopRock(rock);
+                //Display(rock);
                 return;
             }
 
@@ -79,6 +83,16 @@ namespace AdventOfCode2022
             // Check for pattern
             
             
+        }
+
+        private static void RemoveBottom(int nLines)
+        {
+            if (_occupied.Min(o => o.y) >= -nLines) return;
+            
+            int delta = _occupied.Min(o => o.y) + nLines;
+            _occupied.RemoveWhere(o => o.y > delta);
+            _occupied = _occupied.Select(o => (o.x, o.y -= delta)).ToHashSet();
+            _height += delta;            
         }
 
         private static void Display((int x, int y)[] falling)
