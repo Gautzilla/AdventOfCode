@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text;
-using System.Diagnostics;
 
 namespace AdventOfCode2022
 {
@@ -67,11 +65,10 @@ namespace AdventOfCode2022
                 State currentState = new (_jetState, _fallingRockIndex, _occupied);
                 if (pattern.Count == 0 && _states.Any(s => s.IsSameState(currentState)))
                 {
-                    Console.WriteLine($"Same state: {rock}");
                     State firstOfPattern = _states.Single(s => s.IsSameState(currentState));
                     pattern = _states.Skip(_states.IndexOf(firstOfPattern)).Select(s => s.HeightGain).ToList();
                     indexOfPattern = rock;
-                    _height = -(_height - nLines); // 
+                    _height = Math.Abs(_height - nLines); // Stores the height of the top rock line
                 }
 
                 if (pattern.Count == 0) 
@@ -84,11 +81,12 @@ namespace AdventOfCode2022
                 }
                 else 
                 {
-                    _height += (numberOfRocks - rock)/pattern.Count()*pattern.Sum() + pattern.Take((int)((numberOfRocks - rock)%pattern.Count())).Sum();
+                    // Shortcuts the rest of the rocks on the basis of the pattern
+                    long completePatterns = (numberOfRocks - rock)/pattern.Count()*pattern.Sum();
+                    long remainingRocks = pattern.Take((int)((numberOfRocks - rock)%pattern.Count())).Sum();
+                    _height += completePatterns + remainingRocks;
                     break;
-                    _height += pattern[(int)((rock-indexOfPattern)%pattern.Count)];
-                }
-                
+                }                
             }
             
             if (pattern.Count == 0) Console.WriteLine(Math.Abs(_height + _occupied.Min(o => o.y)));
@@ -107,12 +105,10 @@ namespace AdventOfCode2022
             if (rock.Any(p => p.y == -1) || rock.Any(p => _occupied.Contains((p.x, p.y+1))))
             {
                 _occupied = _occupied.Concat(rock).ToHashSet();
-                //Display(rock);
                 return;
             }
 
             rock = rock.Select(p => (p.x, p.y + 1)).ToArray();
-
             Fall(rock);
         }
 
@@ -124,32 +120,6 @@ namespace AdventOfCode2022
             _occupied.RemoveWhere(o => o.y > delta);
             _occupied = _occupied.Select(o => (o.x, o.y -= delta)).ToHashSet();
             _height += delta;            
-        }
-
-        private static void Display((int x, int y)[] falling)
-        {
-            Console.WriteLine();
-            for (int y = falling.Min(o => o.y); y <= 0; y++)
-            {
-                for (int x = 0; x < 9; x++)
-                {
-                    if (falling.Contains((x,y)))
-                    {
-                        Console.Write('@');
-                        continue;
-                    }
-
-                    if (y == 0) Console.Write(x == 0 || x == 8 ? '+' : '_');
-                    else if (x == 0 || x == 8) Console.Write('|');
-                    else 
-                    {
-                        if (_occupied.Count == 0 || !_occupied.Contains((x,y))) Console.Write('.');
-                        else Console.Write('#');
-                    }
-                }
-                Console.WriteLine();
-            }            
-            Console.ReadKey();
         }
     }
 }
