@@ -115,13 +115,21 @@ namespace AdventOfCode2022
         { 
             string[] input = File.ReadAllLines(@"Day19\input.txt");
             foreach (var blueprint in input) _blueprints.Add(ParseBlueprint(blueprint));
+
+            int iD = 1;
+            int qualityLevel = 0;
         
             foreach (var bp in _blueprints)
             {
-                Console.WriteLine(String.Join(" ", bp.RobotCosts.Select(rC => $"Each {rC.Key} robot costs {String.Join(" and ", rC.Value.Select(v => $"{v.amount} {v.resources}"))}")));
-                Console.WriteLine(DFS(new State(), bp, null));
+                int openedGeodes = DFS(new State(), bp, null);
+
+                //Console.WriteLine(String.Join(" ", bp.RobotCosts.Select(rC => $"Each {rC.Key} robot costs {String.Join(" and ", rC.Value.Select(v => $"{v.amount} {v.resources}"))}")));
+                //Console.WriteLine(openedGeodes);
+
+                qualityLevel += openedGeodes * iD++;
             }
-            Console.WriteLine(_maxGeode);
+
+            Console.WriteLine($"Quality level: {qualityLevel}");
         }
 
         private static Blueprint ParseBlueprint(string input)
@@ -159,13 +167,13 @@ namespace AdventOfCode2022
                  Console.ReadKey();
             }
 
+            foreach (var robot in state.Robots) state.Stock[robot.Key] += robot.Value; 
+
             if (state.SpentMinutes >= 24) 
             {
                 _maxGeode = Math.Max(_maxGeode, state.Stock[Resources.geode]);
                 return state.Stock[Resources.geode];
-            }
-
-            foreach (var robot in state.Robots) state.Stock[robot.Key] += robot.Value; 
+            }            
 
             if (robotToBuild != null)
             {
@@ -211,7 +219,7 @@ namespace AdventOfCode2022
             var stock = new Dictionary<Resources, int> (previousState.Stock);
             var robots = new Dictionary<Resources, int> (previousState.Robots);
 
-            foreach (var robot in previousState.Robots) stock[robot.Key] += robot.Value * (numberOfMinutes-1);
+            foreach (var robot in previousState.Robots) stock[robot.Key] += robot.Value * (numberOfMinutes - 1);
 
             return new State(nextSpentMinutes, stock, robots, previousState);
         }
@@ -221,7 +229,7 @@ namespace AdventOfCode2022
             if (robot == Resources.geode) return false;
 
             int mostExpensiveRobot = blueprint.RobotCosts.SelectMany(rC => rC.Value).Where(cost => cost.resources == robot).Max(cost => cost.amount);
-            return state.Robots[robot] >= mostExpensiveRobot || state.Stock[robot] >= mostExpensiveRobot;
+            return state.Robots[robot] >= mostExpensiveRobot || state.Stock[robot] > mostExpensiveRobot;
         }
 
         private static int MinutesBeforeBuilding (Dictionary<Resources, int> stock, Dictionary<Resources, int> robots, List<(Resources resources, int amount)> cost)
