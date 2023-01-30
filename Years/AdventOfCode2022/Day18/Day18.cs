@@ -10,7 +10,7 @@ namespace AdventOfCode2022
     public static class Day18
     {
         private static List<(int x, int y, int z)> cubesOfAir = new();
-        private static (int x, int y, int z)[] _lavaCubes;
+        private static (int x, int y, int z)[] _lavaCubes = new(int x, int y, int z)[0];
         private static (int x, int y, int z) _gridSize;
         private static HashSet<(int x, int y, int z)> _cubesToVisit = new();
         private static Stack<(int x, int y, int z)> _cubeStack = new();
