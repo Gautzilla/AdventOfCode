@@ -89,15 +89,6 @@ namespace AdventOfCode2022
                 this.robots = robots;
                 this.PreviousState = previousState;
             }
-
-            public void PrintState()
-            {
-                Console.WriteLine("TIME: " + spentMinutes);
-                foreach (var robot in robots) Console.WriteLine($"{robot.Value} {robot.Key} robot.");
-                Console.WriteLine();
-                foreach (var resources in stock) Console.WriteLine($"{resources.Value} {resources.Key}.");
-                Console.WriteLine("--------");
-            }
         }
 
         private static HashSet<Blueprint> _blueprints = new();
@@ -147,7 +138,7 @@ namespace AdventOfCode2022
                 "clay" => Resources.clay,
                 "obsidian" => Resources.obsidian,
                 "geode" => Resources.geode,
-                _ => Resources.ore
+                _ => throw new InvalidDataException()
             };
 
             List<(Resources, int)> cost = Regex.Matches(entry, @"(?<amount>\d+) (?<type>\w+)").Select(m => (_resources[m.Groups["type"].Value], int.Parse(m.Groups["amount"].Value))).ToList();
@@ -160,16 +151,6 @@ namespace AdventOfCode2022
 
         private static int DFS (State state, Blueprint blueprint, Resources? robotToBuild)
         {            
-            if (false && state.Stock[Resources.geode] == 7)
-            {
-                while (state.PreviousState != null)
-                {
-                    state.PrintState();
-                    state = state.PreviousState;
-                }
-                 Console.ReadKey();
-            }
-
             foreach (var robot in state.Robots) state.Stock[robot.Key] += robot.Value; 
 
             if (state.SpentMinutes >= _totalTime) 
