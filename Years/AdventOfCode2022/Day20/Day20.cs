@@ -14,7 +14,7 @@ namespace AdventOfCode2022
         { 
             ParseInput();
             MoveNumbers();
-            Console.WriteLine(String.Join("\n", _numbers.Select(n => $"{n.position} : {n.value}")));
+            Console.WriteLine(GroveCoordinates());
         }
 
         private static void ParseInput()
@@ -30,36 +30,43 @@ namespace AdventOfCode2022
                 int oldPosition = _numbers[n].position;
                 int newPosition = ComputeNewPosition(_numbers[n]);
 
-                Console.WriteLine($"{_numbers[n].value} : {oldPosition} => {newPosition}");
-
-                if (newPosition > _numbers[n].position)
+                if (newPosition > oldPosition)
                 {
                     _numbers = _numbers.Select(n => n.position > oldPosition && n.position <= newPosition ? (n.value, n.position -1) : n).ToList();
                 }
 
-                if (newPosition < _numbers[n].position)
+                if (newPosition < oldPosition)
                 {
                     _numbers = _numbers.Select(n => n.position < oldPosition && n.position >= newPosition ? (n.value, n.position +1) : n).ToList();
                 }
 
-                _numbers[n] = (_numbers[n].value, _numbers[n].position);
+                _numbers[n] = (_numbers[n].value, newPosition);
             }
         }
 
         private static int ComputeNewPosition((int value, int position) number)
         {
             int newPos = number.position + number.value;
-
-            // List is circular: moving last number 1 step to the right goes to index 1 (not 0)
-            newPos += newPos/_numbers.Count;
+            
+            // We work on a _numbers.Count - 1 ring since the current number moves (its space is not left empty)
 
             // Wraps back to positive index
-            if (newPos < 0) newPos -= (int)Math.Ceiling((double)newPos/_numbers.Count);
-
+            if (newPos < 0) newPos += ((int)(Math.Abs(newPos)/(_numbers.Count - 1))+1)*(_numbers.Count-1);
+            
             // Stays within the list range
-            newPos %= _numbers.Count;
-
+            newPos %= (_numbers.Count-1);
+            
             return newPos;
+        }
+
+        private static int GroveCoordinates()
+        {
+            int indexOfZero = _numbers.Single(n => n.value == 0).position;
+
+            return new int[] {1000, 2000, 3000}
+            .Select(n => (n+indexOfZero)%_numbers.Count)
+            .Select(i => _numbers.Single(n => n.position == i).value)
+            .Sum();
         }
     }
 }
