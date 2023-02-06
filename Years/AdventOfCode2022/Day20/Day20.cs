@@ -9,18 +9,23 @@ namespace AdventOfCode2022
 {
     public static class Day20
     {
-        private static List<(int value, int position)> _numbers = new();
+        private static List<(long value, int position)> _numbers = new();
+        private static readonly int _decryptionKey = 811589153;
         public static void Solve(int part)
         { 
             ParseInput();
-            MoveNumbers();
+            if (part == 2) _numbers = _numbers.Select(n => (n.value * _decryptionKey, n.position)).ToList();
+            
+            int numberOfMixes = part == 1 ? 1 : 10;
+            for (int mix = 0; mix < numberOfMixes; mix++) MoveNumbers();
+
             Console.WriteLine(GroveCoordinates());
         }
 
         private static void ParseInput()
         {
             string[] input = File.ReadAllLines(@"Day20\input.txt");
-            _numbers = input.Select((val,pos) => (int.Parse(val), pos)).ToList();
+            _numbers = input.Select((val,pos) => (long.Parse(val), pos)).ToList();
         }
 
         private static void MoveNumbers()
@@ -30,36 +35,30 @@ namespace AdventOfCode2022
                 int oldPosition = _numbers[n].position;
                 int newPosition = ComputeNewPosition(_numbers[n]);
 
-                if (newPosition > oldPosition)
-                {
-                    _numbers = _numbers.Select(n => n.position > oldPosition && n.position <= newPosition ? (n.value, n.position -1) : n).ToList();
-                }
-
-                if (newPosition < oldPosition)
-                {
-                    _numbers = _numbers.Select(n => n.position < oldPosition && n.position >= newPosition ? (n.value, n.position +1) : n).ToList();
-                }
+                _numbers = _numbers
+                .Select(n => IsInsidePositions(n.position, oldPosition, newPosition) ? (n.value, n.position + (newPosition < oldPosition ? 1 : -1)) : n)
+                .ToList();
 
                 _numbers[n] = (_numbers[n].value, newPosition);
             }
         }
 
-        private static int ComputeNewPosition((int value, int position) number)
+        private static int ComputeNewPosition((long value, int position) number)
         {
-            int newPos = number.position + number.value;
+            long newPos = number.position + number.value;
             
             // We work on a _numbers.Count - 1 ring since the current number moves (its space is not left empty)
 
             // Wraps back to positive index
-            if (newPos < 0) newPos += ((int)(Math.Abs(newPos)/(_numbers.Count - 1))+1)*(_numbers.Count-1);
+            if (newPos < 0) newPos += ((long)(Math.Abs(newPos)/(_numbers.Count - 1))+1)*(_numbers.Count-1);
             
             // Stays within the list range
             newPos %= (_numbers.Count-1);
             
-            return newPos;
+            return (int)newPos;
         }
 
-        private static int GroveCoordinates()
+        private static long GroveCoordinates()
         {
             int indexOfZero = _numbers.Single(n => n.value == 0).position;
 
@@ -68,5 +67,7 @@ namespace AdventOfCode2022
             .Select(i => _numbers.Single(n => n.position == i).value)
             .Sum();
         }
+
+        private static bool IsInsidePositions(int position, int oldPosition, int newPosition) => position >= Math.Min(newPosition, oldPosition) && position <= Math.Max(newPosition, oldPosition);
     }
 }
