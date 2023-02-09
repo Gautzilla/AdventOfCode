@@ -12,9 +12,9 @@ namespace AdventOfCode2022
         class Monkey
         {
             public (Monkey first, Monkey second)? Operands { get; set; }
-            public Func<int, int, int>? Operation { get; set; }
+            public Func<long, long, long>? Operation { get; set; }
             public string Name { get; set; }
-            public int? Value { get; set; }
+            public long? Value { get; set; }
 
             public Monkey(string name)
             {
@@ -26,10 +26,10 @@ namespace AdventOfCode2022
             {
                 Operation = operationSymbol switch
                 {
-                    '+' => ((int a, int b) => a+b),
-                    '-' => ((int a, int b) => a-b),
-                    '*' => ((int a, int b) => a*b),
-                    '/' => ((int a, int b) => a/b), // MAYBE SOME FLOAT ERROR HERE
+                    '+' => ((long a, long b) => a+b),
+                    '-' => ((long a, long b) => a-b),
+                    '*' => ((long a, long b) => a*b),
+                    '/' => ((long a, long b) => a/b), // MAYBE SOME FLOAT ERROR HERE
                     _ => throw new NotImplementedException()
                 };
                 Operands = (firstMonkey, secondMonkey);
@@ -41,6 +41,19 @@ namespace AdventOfCode2022
                 if (Operands.Value.first.Value == null || Operands.Value.second.Value == null) return;
 
                 Value = Operation(Operands.Value.first.Value.Value, Operands.Value.second.Value.Value);
+
+                if (Name == "root") Console.WriteLine(Value);
+
+                foreach (var monkey in _monkeys.Where(m => m.Value == null && m.Operands != null && (m.Operands.Value.first == this || m.Operands.Value.second == this)))
+                monkey.ComputeValue();
+            }
+
+            public void Yell()
+            {
+                if (Value == null) return;
+
+                foreach (var monkey in _monkeys.Where(m => m.Value == null && m.Operands != null && (m.Operands.Value.first == this || m.Operands.Value.second == this)))
+                monkey.ComputeValue();
             }
         }
 
@@ -51,6 +64,8 @@ namespace AdventOfCode2022
             string[] input = File.ReadAllLines(@"Day21\input.txt");
             
             foreach (var line in input) ParseMonkey(line);
+            
+            Yell();
         }
 
         private static void ParseMonkey(string input)
@@ -81,6 +96,14 @@ namespace AdventOfCode2022
             Monkey monkey = new Monkey(name);
             _monkeys.Add(monkey);
             return monkey;
+        }
+
+        private static void Yell()
+        {
+            foreach (var monkey in _monkeys.Where(m => m.Value != null))
+            {
+                monkey.Yell();
+            }
         }
     }
 }
