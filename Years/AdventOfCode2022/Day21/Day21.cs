@@ -44,14 +44,17 @@ namespace AdventOfCode2022
 
                 if (Name == "root") Console.WriteLine(Value);
 
-                foreach (var monkey in _monkeys.Where(m => m.Value == null && m.Operands != null && (m.Operands.Value.first == this || m.Operands.Value.second == this)))
-                monkey.ComputeValue();
+                MakeOtherMonkeysYell();
             }
 
             public void Yell()
             {
                 if (Value == null) return;
+                MakeOtherMonkeysYell();
+            }
 
+            private void MakeOtherMonkeysYell()
+            {
                 foreach (var monkey in _monkeys.Where(m => m.Value == null && m.Operands != null && (m.Operands.Value.first == this || m.Operands.Value.second == this)))
                 monkey.ComputeValue();
             }
