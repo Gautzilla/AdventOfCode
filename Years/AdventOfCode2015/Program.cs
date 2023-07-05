@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace AdventOfCode2015
 {
@@ -11,8 +11,21 @@ namespace AdventOfCode2015
     {
         static void Main(string[] args)
         {
-            Day3.Solve(2);
-            Console.ReadKey();
+            Stopwatch stopWatch = new Stopwatch();
+            Console.WriteLine("Part:");
+            if (int.TryParse(Console.ReadLine(), out int part) && part == 1 || part == 2) 
+            {
+                stopWatch.Start();
+                Day3.Solve(part);
+                stopWatch.Stop();
+            }
+            else
+            {
+                Console.WriteLine("Part should be 1 or 2.");
+                return;
+            }
+
+            Console.WriteLine($"\nSolved in {stopWatch.ElapsedMilliseconds} ms");
         }
     }
 }
