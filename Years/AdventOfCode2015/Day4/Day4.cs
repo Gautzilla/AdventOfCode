@@ -24,7 +24,11 @@ namespace AdventOfCode2015
                 {
                     Console.WriteLine(tail);
                     return;
-                } 
+                } else if (hash[0] == 0 && hash[1] == 0 && hash[2] == 0)
+                {
+                    Console.WriteLine(tail);
+                    return;
+                }
 
                 tail++;
             }
