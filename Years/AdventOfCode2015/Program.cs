@@ -16,7 +16,7 @@ namespace AdventOfCode2015
             if (int.TryParse(Console.ReadLine(), out int part) && part == 1 || part == 2) 
             {
                 stopWatch.Start();
-                Day3.Solve(part);
+                Day4.Solve(part);
                 stopWatch.Stop();
             }
             else
