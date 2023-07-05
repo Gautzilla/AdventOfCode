@@ -9,12 +9,12 @@ namespace AdventOfCode2015
 {
     public static class Day4
     {
-        static System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
         public static void Solve(int part)
         { 
             string input = File.ReadAllText(@"Day4\input.txt");
             int tail = 0;
 
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
             while (true)
             {
                 string stringToConvert = input + tail;
