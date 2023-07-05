@@ -22,11 +22,6 @@ namespace AdventOfCode2015
         { 
             string input = File.ReadAllText(@"Day3\input.txt");
 
-            (int, int) myTuple = (0, 0);
-            (int, int) mySecondTuple = myTuple;
-            mySecondTuple.Item1++;
-            Console.WriteLine(myTuple.Item1);
-
             for (int c = 0; c < input.Length; c++)
                 {
                     char direction = input[c];
