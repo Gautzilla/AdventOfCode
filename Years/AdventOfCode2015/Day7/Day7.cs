@@ -19,6 +19,14 @@ namespace AdventOfCode2015
             string part1 = ProcessInstructions();
 
             Console.WriteLine($"Part 1: {ProcessInstructions()}");
+
+            // PART 2: injecting wire a value into wire b
+            if (!long.TryParse(part1, out long aWire)) return;
+            _wires = new();
+            _waitingInstructions.Clear();
+            input = input.Select(line => line.Split(" ").Last() == "b" ? $"{aWire} -> b" : line).ToList();
+            
+            Console.WriteLine($"Part 2: {ProcessInstructions()}");
         }
 
         private static string ProcessInstructions()
