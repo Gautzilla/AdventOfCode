@@ -10,15 +10,15 @@ namespace AdventOfCode2015
 {
     public static class Day10
     {
-        private static int _repetitions = 40;
+        private static int _repetitionsPart1 = 40;
+        private static int _repetitionsPart2 = 50;
         public static void Solve(int part)
         { 
             string input = File.ReadAllText(@"Day10\input.txt");
+
+            int repetitions = part == 1 ? _repetitionsPart1 : _repetitionsPart2;
             
-            for (int i = 0; i < _repetitions; i++)
-            {
-                input = LookAndSay(input);
-            }
+            for (int i = 0; i < repetitions; i++) input = LookAndSay(input);
 
             Console.WriteLine(input.Length);
         }
