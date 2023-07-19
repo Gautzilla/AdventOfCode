@@ -29,7 +29,10 @@ namespace AdventOfCode2015
 
             foreach (string distance in input) ParseDistance(distance);
             
-            Console.WriteLine(_locations.Min(location => DFS(location, new HashSet<Location>(_locations), 0)));
+            bool lookingForMinDistance = part == 1;
+
+            if (lookingForMinDistance) Console.WriteLine(_locations.Min(location => DFS(location, new HashSet<Location>(_locations), 0, lookingForMinDistance)));
+            else Console.WriteLine(_locations.Max(location => DFS(location, new HashSet<Location>(_locations), 0, lookingForMinDistance)));
         }
 
         private static void ParseDistance(string distanceLine)
@@ -53,23 +56,25 @@ namespace AdventOfCode2015
             return output;
         }
 
-        private static int DFS(Location currentLocation, HashSet<Location> locationsToVisit, int totalDistance)
+        private static int DFS(Location currentLocation, HashSet<Location> locationsToVisit, int totalDistance, bool lookingForMinDistance)
         {
             locationsToVisit.Remove(currentLocation);
 
             if (locationsToVisit.Count == 0) return totalDistance;
 
-            int minDistance = int.MaxValue;
+            int comparisonDistance = lookingForMinDistance ? int.MaxValue : int.MinValue;
 
             foreach (Location location in locationsToVisit)
             {
-
                 int distance = currentLocation.Distances[location];
                 HashSet<Location> remainingLocations = new HashSet<Location>(locationsToVisit);
-                minDistance = Math.Min(minDistance, DFS(location, remainingLocations, totalDistance + distance));
+                
+                int nextPathDistance = DFS(location, remainingLocations, totalDistance + distance, lookingForMinDistance);
+
+                comparisonDistance = lookingForMinDistance ? Math.Min(comparisonDistance, nextPathDistance) : Math.Max(comparisonDistance, nextPathDistance);
             }
 
-            return minDistance;
+            return comparisonDistance;
         }
     }
 }
