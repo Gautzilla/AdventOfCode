@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Reflection.Metadata;
 
 namespace AdventOfCode2023
 {
     public static class Day01
     {
-        private static readonly string[] _letterDigits = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+        private const string _regexPart1 = @"\d";
+        private const string _regexPart2 = @"\d|one|two|three|four|five|six|seven|eight|nine";
+        private static readonly string[] _digitStrings = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
 
         public static void Solve(int part)
         { 
@@ -21,55 +25,15 @@ namespace AdventOfCode2023
 
         private static int CalibrationValue(string line, int part)
         {
-            if (part == 2)
-            {
-                line = ReplaceLetterDigits(line, true);
-                line = ReplaceLetterDigits(line, false);
-            }
+            string regex = part == 1 ? _regexPart1 : _regexPart2;
 
-            var filtered = string.Join("", line
-                .Where(char.IsDigit));
+            string[] digits = [Regex.Match(line, regex).Value, Regex.Match(line, regex, RegexOptions.RightToLeft).Value];
 
-            var combined = $"{filtered.First()}{filtered.Last()}";            
+            digits = digits
+                .Select(d => _digitStrings.Contains(d) ? Array.IndexOf(_digitStrings, d).ToString() : d)
+                .ToArray();
 
-            return int.Parse(combined);
-        }
-
-        private static string ReplaceLetterDigits(string line, bool leftToRight)
-        {
-            int index = leftToRight ? 0 : (line.Length-_letterDigits.Min(l => l.Length - 1));
-            int runningLength = 1;
-            string running = "";
-            bool digitFound = false;
-
-            while (index + runningLength <= line.Length && index >= 0)
-            {
-                running = line.Substring(index, runningLength);
-
-                string? letterDigit = _letterDigits.FirstOrDefault(d => d == running);
-                if (!string.IsNullOrEmpty(letterDigit))
-                {
-                    digitFound = true;
-                    break;
-                } 
-
-                if (_letterDigits.Any(d => d.StartsWith(running)))
-                {
-                    runningLength++;
-                    continue;
-                }
-
-                runningLength = 1;
-                index += leftToRight ? 1 : -1;
-            }
-
-            if (digitFound)
-            {
-                string value = Array.IndexOf(_letterDigits, running).ToString();
-                line = line.Insert(index, value);
-            }
-
-            return line;
+            return int.Parse($"{digits.First()}{digits.Last()}");
         }
     }
 }
