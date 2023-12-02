@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
-using System.Collections.Immutable;
-
 namespace AdventOfCode2023
 {
     class Game
@@ -15,6 +6,7 @@ namespace AdventOfCode2023
         public List<(int red, int green, int blue)>  Sets { get; } = new();
         public (int red, int green, int blue) Stock { get; } = (12, 13, 14);
         public bool IsPossible { get; set; } = true;
+        public int Power { get; }
 
         public Game (string line)
         {
@@ -40,6 +32,8 @@ namespace AdventOfCode2023
             }
 
             IsPossible = Sets.All(s => s.red <= Stock.red && s.blue <= Stock.blue && s.green <= Stock.green);
+            
+            Power = Sets.Max(s => s.red) * Sets.Max(s => s.green) * Sets.Max(s => s.blue);
         }
 
     }
@@ -53,6 +47,7 @@ namespace AdventOfCode2023
             games = input.Select(s => new Game(s)).ToList();
 
             if (part == 1) Console.WriteLine(games.Where(g => g.IsPossible).Sum(g => g.ID));
+            if (part == 2) Console.WriteLine(games.Sum(g => g.Power));
         }
     }
 }
