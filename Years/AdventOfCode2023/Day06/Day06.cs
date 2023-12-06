@@ -33,13 +33,14 @@ namespace AdventOfCode2023
 
         private static void SolvePart2(string[] input)
         {
-            (long time, long distance) = (long.Parse(string.Join("",input.First().Where(char.IsDigit))), long.Parse(string.Join("",input.Last().Where(char.IsDigit))));
+            (long time, long distance) = (input.First().ParseSplitLong(), input.Last().ParseSplitLong());
             Console.WriteLine(NbWinPossibilities(time, distance));        
         }
 
         private static IEnumerable<int> ParseInts (this string s) => s.Split(' ',StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => int.TryParse(s, out int temp))
                 .Select(int.Parse);
+        private static long ParseSplitLong(this string s) => long.Parse(string.Join("",s.Where(char.IsDigit)));
         private static long Distance(long pressTime, long totalTime) => (totalTime - pressTime) * pressTime;
         private static int NbWinPossibilities(long time, long distance) => Enumerable.Range(1, (int)time).Where(t => Distance(t, time) > distance).Count();
     }
