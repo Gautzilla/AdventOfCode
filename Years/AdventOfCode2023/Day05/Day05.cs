@@ -1,15 +1,35 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-
 namespace AdventOfCode2023
 {
     public static class Day05
     {
-        private static List<(long start, long stop, bool hasEvolved)> _seeds = new();
+        private record Seed
+        {
+            public long Start { get;}
+            public long Stop { get;}
+            public bool HasEvolved { get; set; }
+
+            public Seed(long start, long stop, bool hasEvolved)
+            {
+                Start = start;
+                Stop = stop;
+                HasEvolved = hasEvolved;        
+            }
+        }
+
+        private record MapItem
+        {
+            public long Start { get;}
+            public long Stop { get;}
+            public long Offset { get;}
+
+            public MapItem(long start, long stop, long offset)
+            {
+                Start = start;
+                Stop = stop;
+                Offset = offset;
+            }
+        }
+        private static List<Seed> _seeds = [];
         public static void Solve(int part)
         { 
             string[] input = File.ReadAllLines(@"Day05\input.txt");
@@ -17,66 +37,72 @@ namespace AdventOfCode2023
             if (part == 1) ParseSeedsP1(input.First());   
             else ParseSeedsP2(input.First());
 
-            foreach (var line in input.Skip(1))
-            {
-                if (line == string.Empty) continue;
+            foreach (var line in input.Skip(1)) ProcessLine(line);
 
-                if (line.Contains("map"))
-                {
-                    _seeds = _seeds.Select(s => (s.start, s.stop, false)).ToList();
-                    continue;
-                }
-
-                var mapItem = ParseMapItem(line);
-                List<(long start, long stop, bool hasEvolved)> newSeeds = new(_seeds.Where(s => s.hasEvolved));
-
-                foreach (var seed in _seeds.Where(s => !s.hasEvolved))
-                {
-                    if (!seed.Intercepts((mapItem.start, mapItem.stop)))
-                    {
-                         newSeeds.Add(seed);
-                         continue;
-                    }
-                    newSeeds.AddRange(Intersection(seed, (mapItem.start, mapItem.stop), mapItem.offset));
-                }
-
-                _seeds = new(newSeeds);
-            }
-
-            Console.WriteLine(_seeds.Min(s => s.start));
+            Console.WriteLine(_seeds.Min(s => s.Start));
         }
 
         private static void ParseSeedsP1 (string inputLine) => _seeds = inputLine
                 .Split(' ')
                 .Where(s => long.TryParse(s, out long i))
                 .Select(long.Parse)
-                .Select(i => (i,i, false))
+                .Select(l => new Seed(l, l, false))
                 .ToList();
         
         private static void ParseSeedsP2 (string inputLine) => _seeds = inputLine
                 .Split(' ')
                 .Where(s => long.TryParse(s, out long temp))
                 .Chunk(2)
-                .Select(c => (long.Parse(c.First()), long.Parse(c.First()) + long.Parse(c.Last()) - 1, false))
+                .Select(chunk => chunk.Select(long.Parse))
+                .Select(chunk => new Seed(chunk.First(), chunk.First() + chunk.Last() - 1, false))
                 .ToList();
 
-        private static (long start, long stop, long offset) ParseMapItem(string line)
+        private static MapItem ParseMapItem(string line)
         {
             var ints = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToArray();
-            return (ints[1], ints[1] + ints[2], ints[0] - ints[1]);
+            return new MapItem(ints[1], ints[1] + ints[2], ints[0] - ints[1]);
         }
 
-        private static bool Intercepts(this (long start, long stop, bool hasEvolved) source, (long start, long stop) mapItem) => !(source.stop < mapItem.start || source.start > mapItem.stop);
-
-        private static List<(long start, long stop, bool hasEvolved)> Intersection((long start, long stop, bool hasEvolved) source, (long start, long stop) mapItem, long mapItemOffset)
+        private static void ProcessLine(string line)
         {
-            List<(long start, long stop, bool hasEvolved)> output = new();
+            if (line == string.Empty) return;
 
-            if (source.start < mapItem.start) output.Add((source.start, mapItem.start-1, false));
+            if (line.Contains("map"))
+            {
+                foreach (var seed in _seeds) seed.HasEvolved = false;
+                return;
+            }
 
-            output.Add((Math.Max(source.start, mapItem.start) + mapItemOffset, Math.Min(source.stop, mapItem.stop) + mapItemOffset, true));
+            var mapItem = ParseMapItem(line);
+            List<Seed> newSeeds = new(_seeds.Where(s => s.HasEvolved));
 
-            if (source.stop > mapItem.stop) output.Add((mapItem.stop + 1, source.stop, false));
+            foreach (var seed in _seeds.Where(s => !s.HasEvolved))
+            {
+                if (!seed.Intercepts(mapItem))
+                {
+                        newSeeds.Add(seed);
+                        continue;
+                }
+                newSeeds.AddRange(Intersection(seed, mapItem));
+            }
+
+            _seeds = new(newSeeds);
+        }
+
+        private static bool Intercepts(this Seed source, MapItem mapItem) => !(source.Stop < mapItem.Start || source.Start > mapItem.Stop);
+
+        private static List<Seed> Intersection(Seed source, MapItem mapItem)
+        {
+            List<Seed> output = new();
+
+            // Part that is not concerned by the map input (lower value than map input start)
+            if (source.Start < mapItem.Start) output.Add(new Seed(source.Start, mapItem.Start-1, false));
+
+            // Part that is concerned by the map input
+            output.Add(new Seed(Math.Max(source.Start, mapItem.Start) + mapItem.Offset, Math.Min(source.Stop, mapItem.Stop) + mapItem.Offset, true));
+
+            // Part that is not concerned by the map input (higher value than map input start)
+            if (source.Stop > mapItem.Stop) output.Add(new Seed(mapItem.Stop + 1, source.Stop, false));
 
             return output;
         }
