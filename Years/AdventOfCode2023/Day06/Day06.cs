@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace AdventOfCode2023
 {
@@ -41,7 +42,13 @@ namespace AdventOfCode2023
                 .Where(s => int.TryParse(s, out int temp))
                 .Select(int.Parse);
         private static long ParseSplitLong(this string s) => long.Parse(string.Join("",s.Where(char.IsDigit)));
-        private static long Distance(long pressTime, long totalTime) => (totalTime - pressTime) * pressTime;
-        private static int NbWinPossibilities(long time, long distance) => Enumerable.Range(1, (int)time).Where(t => Distance(t, time) > distance).Count();
+        private static int NbWinPossibilities(long time, long distance)
+        {
+            double delta = time * time - 4 * distance;
+            var r1 = Math.Floor((time - Math.Sqrt(delta))/2) + 1; // Floor + 1 instead of Ceiling because we want (time - x) * x > d and not >= d. 
+            var r2 = Math.Ceiling((time + Math.Sqrt(delta))/2) - 1; // This way the integer roots are not included.
+
+            return (int)(r2-r1+1);
+        }
     }
 }
