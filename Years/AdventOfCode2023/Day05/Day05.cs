@@ -22,11 +22,13 @@ namespace AdventOfCode2023
             public long Stop { get;}
             public long Offset { get;}
 
-            public MapItem(long start, long stop, long offset)
+            public MapItem(string line)
             {
-                Start = start;
-                Stop = stop;
-                Offset = offset;
+                var ints = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToArray();
+
+                Start = ints[1];
+                Stop = ints[1] + ints[2];
+                Offset = ints[0] - ints[1];
             }
         }
         private static List<Seed> _seeds = [];
@@ -57,23 +59,24 @@ namespace AdventOfCode2023
                 .Select(chunk => new Seed(chunk.First(), chunk.First() + chunk.Last() - 1, false))
                 .ToList();
 
-        private static MapItem ParseMapItem(string line)
-        {
-            var ints = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToArray();
-            return new MapItem(ints[1], ints[1] + ints[2], ints[0] - ints[1]);
-        }
-
         private static void ProcessLine(string line)
         {
             if (line == string.Empty) return;
 
             if (line.Contains("map"))
             {
+                // New category, every seed is reinitialized
                 foreach (var seed in _seeds) seed.HasEvolved = false;
                 return;
             }
 
-            var mapItem = ParseMapItem(line);
+            MapItem mapItem = new(line);
+            
+            _seeds = EvolveSeeds(mapItem);
+        }
+
+        private static List<Seed> EvolveSeeds(MapItem mapItem)
+        {
             List<Seed> newSeeds = new(_seeds.Where(s => s.HasEvolved));
 
             foreach (var seed in _seeds.Where(s => !s.HasEvolved))
@@ -86,7 +89,7 @@ namespace AdventOfCode2023
                 newSeeds.AddRange(Intersection(seed, mapItem));
             }
 
-            _seeds = new(newSeeds);
+            return newSeeds;
         }
 
         private static bool Intercepts(this Seed source, MapItem mapItem) => !(source.Stop < mapItem.Start || source.Start > mapItem.Stop);
