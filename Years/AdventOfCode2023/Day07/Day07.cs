@@ -22,22 +22,31 @@ namespace AdventOfCode2023
             FourOfAKind,
             FiveOfAKind
         }
+
         private class Hand
         {         
             public char[] Cards { get; private set;}
             public char[] CardsValues { get; private set;}
             public int Bid { get;}
-            public HandType Type { get;}
+            public HandType Type { get; }
 
             public Hand(string line, int part)
             {
                 Cards = line.Split(' ').First().ToCharArray();
-                CardsValues = line.Split(' ').First().ToCharArray();
+                CardsValues = line.Split(' ').First().ToCharArray(); // Jokers are not replaced for tie breaking
 
                 Bid = int.Parse(line.Split(' ').Last());
 
-                // Replace Jokers (not in CardsValues for tie breaking)
-                if (part == 2 && Cards.Any(c => c!='J')) Cards = Cards
+                if (part == 2) ReplaceJokers();
+
+                Type = DetermineType();                
+            }
+
+            private void ReplaceJokers()
+            {
+                if (Cards.All(c => c=='J')) return;
+
+                Cards = Cards
                     .Select(c => c == 'J' ? Cards
                         .Where(c => c!= 'J')
                         .GroupBy(c => c)
@@ -46,8 +55,9 @@ namespace AdventOfCode2023
                         .First()
                     : c)
                     .ToArray();
+            }
 
-                Type = Cards.Distinct().Count() switch
+            private HandType DetermineType() => Cards.Distinct().Count() switch
                 {
                     1 => HandType.FiveOfAKind,
                     2 when Cards.GroupBy(c => c).OrderBy(g => g.Count()).Last().Count() == 4 => HandType.FourOfAKind,
@@ -57,7 +67,6 @@ namespace AdventOfCode2023
                     4 => HandType.OnePair,
                     _ => HandType.HighCard
                 };
-            }
         }
 
         private static List<Hand> _hands = new();
