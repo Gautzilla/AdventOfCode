@@ -31,7 +31,7 @@ namespace AdventOfCode2023
 
             foreach (var s in input.Skip(2))
             {
-                Match m = Regex.Match(s, @"(?<current>\w{3}) = \((?<left>\w{3}), (?<right>\w{3})\)");
+                Match m = Regex.Match(s, @"(?<current>[\w\d]{3}) = \((?<left>[\w\d]{3}), (?<right>[\w\d]{3})\)");
 
                 string nodeName = m.Groups["current"].Value;
                 string leftName = m.Groups["left"].Value;
@@ -46,6 +46,13 @@ namespace AdventOfCode2023
                 current.RightNode = GetNode(rightName);
             }
 
+            
+            if (part == 1) Console.WriteLine(Part1());
+            else Console.WriteLine(LCM(_nodes.Where(n => n.Name.EndsWith('A')).Select(node => Part2(node))));
+        }
+
+        private static int Part1()
+        {
             int step = 0;
             Node? currentNode = _nodes.First(n => n.Name == "AAA");
             while (currentNode != null && currentNode.Name != "ZZZ")
@@ -53,7 +60,18 @@ namespace AdventOfCode2023
                 currentNode = _directions[step%_directions.Length] == 'L' ? currentNode.LeftNode : currentNode.RightNode;
                 step++;
             }
-            Console.WriteLine(step);
+            return step;
+        }
+
+        private static long Part2(Node node)
+        {
+            int step = 0;
+            while (!node.Name.EndsWith('Z'))
+            {
+                node = (_directions[step%_directions.Length] == 'L' ? node.LeftNode : node.RightNode)!;
+                step++;
+            }
+            return step;
         }
 
         private static void AddNode (string name)
@@ -62,5 +80,14 @@ namespace AdventOfCode2023
         }
 
         private static Node GetNode (string name) => _nodes.FirstOrDefault(n => n.Name == name) ?? new Node(name);
+    
+        static long GCD(long n1, long n2)
+        {
+            if (n2 == 0) return n1;
+            return GCD(n2, n1 % n2);            
+        }
+
+        public static long LCM(IEnumerable<long> numbers) => numbers.Aggregate((S, val) => S * val / GCD(S, val));
+    
     }
 }
