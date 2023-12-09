@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-
 namespace AdventOfCode2023
 {
     public static class Day09
@@ -16,6 +9,7 @@ namespace AdventOfCode2023
             List<List<int>> inputs = ParseInput(input);
 
             if (part == 1) Console.WriteLine(Part1(inputs));
+            else Console.WriteLine(Part2(inputs));
         }
 
         private static List<List<int>> ParseInput(string[] input) => input
@@ -26,23 +20,27 @@ namespace AdventOfCode2023
             .ToList();
 
         private static int Part1 (List<List<int>> inputs) => inputs
-            .Select(GetLastNumbers)
-            .Select(lastNumbers => lastNumbers.Aggregate((a,b) => a+b))
+            .Select(GetEndNumbers)
+            .Select(ends => ends.Select(e => e.last).Sum())
             .Sum();
 
-        private static List<int> GetLastNumbers(List<int> input)
-        {
+        private static int Part2 (List<List<int>> inputs) => inputs
+            .Select(GetEndNumbers)
+            .Select(ends => ends.Select(e => e.first).Reverse())
+            .Select(firstNumbers => firstNumbers.Aggregate((a,b) => b-a))
+            .Sum();
 
-            List<int> lastNumbers = [input.Last()];
+        private static List<(int first, int last)> GetEndNumbers(List<int> input)
+        {
+            List<(int, int)> endNumbers = [(input.First(),input.Last())];
 
             while (input.Any(i => i != 0))
             {                
                 List<int> copy = new(input);
                 input = copy.Skip(1).Select((val, index) => copy[index+1] - copy[index]).ToList();
-                lastNumbers.Add(input.Last());
+                endNumbers.Add((input.First(),input.Last()));
             }
-
-            return lastNumbers;
+            return endNumbers;
         }
     }
 }
