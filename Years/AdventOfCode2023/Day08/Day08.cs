@@ -76,7 +76,8 @@ namespace AdventOfCode2023
 
         private static void AddNode (string name)
         {
-            if (!_nodes.Any(n => n.Name == name)) _nodes.Add(new Node(name));
+            if (_nodes.Any(n => n.Name == name)) return;
+            _nodes.Add(new Node(name));
         }
 
         private static Node GetNode (string name) => _nodes.FirstOrDefault(n => n.Name == name) ?? new Node(name);
