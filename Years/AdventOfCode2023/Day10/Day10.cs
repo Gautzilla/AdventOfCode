@@ -9,6 +9,13 @@ namespace AdventOfCode2023
 {
     public static class Day10
     {   
+        enum Direction
+        {
+            North,
+            East,
+            South,
+            West
+        }
         private static readonly Dictionary<char, bool[]> _connections = new () {
         {'|', [true, false, true, false]},        
         {'-', [false, true, false, true]},
@@ -28,6 +35,13 @@ namespace AdventOfCode2023
             public char Char { get; set; }
             public bool[] Connections { get; set; }
             public bool IsStartingPosition { get; set; }
+            public Direction? DirectionFrom { get; set; }
+            public Direction? DirectionTo { get; set; }
+            public bool IsPartOfLoop
+            {
+                get { return DirectionFrom != null && DirectionTo != null; }
+            }
+            
 
             public Pipe((int x, int y) coordinates, char c)
             {
@@ -35,6 +49,8 @@ namespace AdventOfCode2023
                 Char = c;
                 Connections = _connections[c];
                 IsStartingPosition = c == 'S';
+                DirectionFrom = null;
+                DirectionTo = null;
             }
         }
 
@@ -48,6 +64,7 @@ namespace AdventOfCode2023
 
             Pipe startingPipe = _pipes.Single(l => l.Any(p => p.IsStartingPosition)).Single(p => p.IsStartingPosition);
             Console.WriteLine(LoopLength(startingPipe)/2);
+            if (part == 2) Console.WriteLine(EnclosedTiles());
         }
 
         private static int LoopLength (Pipe current)
@@ -76,6 +93,9 @@ namespace AdventOfCode2023
 
                     if (next.IsStartingPosition && lastPipeIsStartingPipe) continue; // We don't want to go back after the first step
 
+                    current.DirectionTo = (Direction)d;
+                    next.DirectionFrom = (Direction)((d + 2)%_directions.Length);
+
                     if (!current.IsStartingPosition) visited.Add(current);
                     lastPipeIsStartingPipe = current.IsStartingPosition;
                     current = next;
@@ -85,6 +105,37 @@ namespace AdventOfCode2023
             }
 
             return visited.Count + 1;
+        }
+
+        private static int EnclosedTiles()
+        {
+            int enclosedTiles = 0;
+
+            for (int y = 0; y < _pipes.Length; y++)
+            {
+                int delta = 0;
+                for (int x = 0; x < _pipes[y].Length; x++)
+                {
+                    Pipe pipe = _pipes[y][x];
+
+                    if (!pipe.IsPartOfLoop)
+                    {
+                        if (delta != 0)
+                        {
+                            enclosedTiles++;
+                            continue;
+                        }
+                        continue;
+                    }
+                    
+                    if (pipe.DirectionFrom == Direction.South) delta++;
+                    if (pipe.DirectionTo == Direction.North) delta++;
+                    if (pipe.DirectionFrom == Direction.North) delta--;
+                    if (pipe.DirectionTo == Direction.South) delta--;
+                }                
+            }
+
+            return enclosedTiles;
         }
 
         private static bool IsInsideBounds (int x, int y) => x >= 0 && y >= 0 && x < _pipes.First().Length && y < _pipes.Length;
