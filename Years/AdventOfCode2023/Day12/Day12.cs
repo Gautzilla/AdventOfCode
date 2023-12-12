@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode2023
 {
@@ -13,55 +14,56 @@ namespace AdventOfCode2023
         { 
             string[] input = File.ReadAllLines(@"Day12\input.txt");
 
-            int result = SolvePart1(input);
+            int result = input.Sum(line => NbMatchingSpringSequences(line.GetSpringSequence(), line.GetRequiredConsecutiveLitSprings()));
 
             Console.WriteLine(result);
         }
 
-        private static int SolvePart1 (string[] input)
+        private static int[] GetRequiredConsecutiveLitSprings (this string line) => line
+            .Split(' ')
+            .Last()
+            .Split(',')
+            .Select(int.Parse)
+            .ToArray();
+
+        private static string GetSpringSequence (this string line) => line
+            .Split(' ')
+            .First();
+        
+        private static int NbMatchingSpringSequences (string springs, int[] litLengths)
         {
-            int output = 0;
 
-            foreach (var line in input)
+            int litLengthIndex = 0;
+            int nbConsecutiveLit = 0;
+
+            foreach (var spring in springs)
             {
-                int[] seriesLengths = line
-                    .Split(' ')
-                    .Last()
-                    .Split(',')
-                    .Select(int.Parse)
-                    .ToArray();
-                
-                string springs = line
-                    .Split(' ')
-                    .First();
+                if (spring == '?') return NbMatchingSpringSequences(springs.ReplaceUnknown(true), litLengths) + NbMatchingSpringSequences(springs.ReplaceUnknown(false), litLengths);
 
-                for (int litSprings = 0; litSprings < Math.Pow(2,springs.Count(c => c == '?')); litSprings++)
+                if (spring == '.')
                 {
-                    var unknowns = springs
-                        .Select((c, index) => (c, index))
-                        .Where(spring => spring.c == '?')
-                        .ToArray();
-                        
-                    var temp = springs.ToCharArray();
+                    if (nbConsecutiveLit == 0) continue;
+                    if (litLengthIndex < litLengths.Length && litLengths[litLengthIndex] != nbConsecutiveLit) return 0;
+                    litLengthIndex++;
+                    nbConsecutiveLit = 0;
+                }
 
-                    for (int springToLit = 0; springToLit < unknowns.Length; springToLit++)
-                    {
-                        char springTemp = ((int)Math.Pow(2,springToLit) | litSprings) == litSprings ? '#' : '.';
-                        temp[unknowns[springToLit].index] = springTemp;                        
-                    }
-
-                    if (FitLengths(new string(temp), seriesLengths)) output++;
+                if (spring == '#')
+                {
+                    if (litLengthIndex < litLengths.Length && ++nbConsecutiveLit > litLengths[litLengthIndex]) return 0;
                 }
             }
 
-            return output;
+            return springs.Split('.', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Length).SequenceEqual(litLengths) ? 1 : 0;
         }
 
-        private static bool FitLengths (string springs, int[] seriesLengths) => seriesLengths
-            .SequenceEqual(springs
-                .Split('.', StringSplitOptions.RemoveEmptyEntries)
-                .Select(groups => groups.Length)
-                .ToArray()
-            );
+        private static string ReplaceUnknown (this string springs, bool isNextSpringLit)
+        {
+            int index = springs.IndexOf('?');
+            var springsCharArray = springs.ToCharArray();
+            springsCharArray[index] = isNextSpringLit ? '#' : '.';
+
+            return new string(springsCharArray);
+        }
     }
 }
