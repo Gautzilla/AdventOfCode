@@ -6,7 +6,7 @@ Stopwatch stopWatch = new Stopwatch();
             if (int.TryParse(Console.ReadLine(), out int part) && part == 1 || part == 2) 
             {
                 stopWatch.Start();
-                Day13.Solve(part);
+                Day14.Solve(part);
                 stopWatch.Stop();
             }
             else
