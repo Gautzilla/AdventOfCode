@@ -98,38 +98,70 @@ namespace AdventOfCode2023
 
             _size = (input.First().Length, input.Length);
 
-            ParseRocks(input);
+            _rocks = ParseRocks(input);
 
-            DisplayRocks();
-            
-            for (int dirIndex = 0; dirIndex < 4; dirIndex++)
-            {
-                Direction direction = (Direction)dirIndex;
-
-                _rocks = OrderRocks(direction);
-                
-                foreach (var rock in _rocks)
-                {
-                    rock.Move(_rocks, direction);
-                }
-                
-
-                    Console.WriteLine($"\r\n{direction}\r\n");
-
-                    DisplayRocks();
-            }
-
-            //Console.WriteLine(_rocks.Where(r => r.CanMove).Sum(r => input.Length - r.Coordinates.y));
+            Console.WriteLine(part == 1 ? SolvePart1() : SolvePart2());
         }
 
-        private static void ParseRocks (string[] input)
-        {
-            _rocks = input
+        private static List<Rock> ParseRocks (string[] input) => input
                 .SelectMany((row, y) => row
                     .Select((val, x) => (val,x,y)))
                     .Where(point => point.val != '.')
                     .Select(rock => new Rock(rock.x, rock.y, rock.val))
                 .ToList();
+
+        private static int SolvePart1()
+        {
+            _rocks = OrderRocks(Direction.North);
+                
+            foreach (var rock in _rocks)
+            {
+                rock.Move(_rocks, Direction.North);
+            }
+
+            return _rocks.Where(r => r.CanMove).Sum(r => _size.y - r.Coordinates.y);
+        }
+
+        private static List<string> _memory = [];
+
+        private static int SolvePart2()
+        {
+            int indexLoopStart = -1;
+
+            while (true)   
+            {
+                string state = ExportRocks(_rocks) ?? "";
+
+                indexLoopStart = _memory.IndexOf(state);
+
+                if (indexLoopStart != -1) break;
+                
+                Cycle();
+
+                _memory.Add(state);
+            }             
+
+            int loopLength = _memory.Count - indexLoopStart;
+            string targetState = _memory[(1000000000 - 1 - indexLoopStart)%loopLength + indexLoopStart];
+
+            List<Rock> targetRocks = ParseRocks(targetState.Split("\r\n").ToArray());
+
+            return targetRocks.Where(r => r.CanMove).Sum(r => _size.y - r.Coordinates.y);
+        }
+
+        private static void Cycle ()
+        {
+            for (int dirIndex = 0; dirIndex < 4; dirIndex++)
+                {
+                    Direction direction = (Direction)dirIndex;
+
+                    _rocks = OrderRocks(direction);
+                    
+                    foreach (var rock in _rocks)
+                    {
+                        rock.Move(_rocks, direction);
+                    }
+                }
         }
 
         private static List<Rock> OrderRocks (Direction direction) => direction switch
@@ -141,12 +173,10 @@ namespace AdventOfCode2023
             _ => throw new ArgumentException("Unknown direction")
         };
 
-        private static void DisplayRocks()
-        {
-            Console.WriteLine(string.Join("\r\n", Enumerable.Range(0, _rocks.Max(r => r.Coordinates.y)+1)
-                .Select(y => String.Join("",Enumerable.Range(0, _rocks.Max(r => r.Coordinates.x)+1)
-                    .Select(x => _rocks.Any(r => r.Coordinates == (x,y)) ? (_rocks.Single(rock => rock.Coordinates == (x,y)).CanMove ? 'O' : '#') : '.')))));
-            Console.WriteLine("\r\n\r\n");
-        }
+        private static string ExportRocks (List<Rock> rocks) => string.Join("\r\n", 
+            Enumerable.Range(0, rocks.Max(r => r.Coordinates.y)+1)
+                .Select(y => String.Join("",
+                    Enumerable.Range(0, rocks.Max(r => r.Coordinates.x)+1)
+                        .Select(x => rocks.Any(r => r.Coordinates == (x,y)) ? (rocks.Single(rock => rock.Coordinates == (x,y)).CanMove ? 'O' : '#') : '.'))));
     }
 }
