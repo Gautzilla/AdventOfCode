@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-using System.Drawing;
-
 namespace AdventOfCode2023
 {
     public static class Day13
@@ -14,10 +6,8 @@ namespace AdventOfCode2023
         {
             public List<(int x, int y)> Rocks { get; set; }
             public (int x, int y) Size { get; set; }
-
             public int NbRowsBeforeLine { get; set; } = 0;
             public int NbColumnBeforeLine { get; set; } = 0;
-
             public int SummarizedNote { get; set; }
 
             public Pattern(IEnumerable<string> input)
@@ -56,7 +46,18 @@ namespace AdventOfCode2023
                 List<(int x, int y)> RocksA = isLoopVertical ? Rocks.Where(r => r.x >= index - size && r.x < index).ToList() : Rocks.Where(r => r.y >= index - size && r.y < index).ToList();
                 List<(int x, int y)> RocksB = isLoopVertical ? Rocks.Where(r => r.x >= index && r.x < index + size).ToList() : Rocks.Where(r => r.y >= index && r.y < index + size).ToList();
 
-                if (RocksA.Count != RocksB.Count) return false;
+                if (_part == 1 && RocksA.Count != RocksB.Count) return false;
+
+                if (_part == 2)
+                { 
+                    if (Math.Abs(RocksA.Count - RocksB.Count) != 1) return false;
+
+                    var RocksATemp = RocksA.Count < RocksB.Count ? RocksA : RocksB;
+                    var RocksBTemp = RocksA.Count < RocksB.Count ? RocksB : RocksA;
+
+                    RocksA = RocksATemp;
+                    RocksB = RocksBTemp;
+                }
 
                 foreach (var rockA in RocksA)
                 {
@@ -76,12 +77,14 @@ namespace AdventOfCode2023
         }
 
         private static List<Pattern> _patterns = [];
-
+        private static int _part = 1;
         public static void Solve(int part)
         { 
             string[] input = File.ReadAllLines(@"Day13\input.txt");
+            
+            _part = part;
 
-            ParsePatterns(input);
+            ParsePatterns(input);           
 
             Console.WriteLine(_patterns.Sum(p => p.SummarizedNote));
         }
