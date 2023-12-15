@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Net.Mime;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode2023
 {
     public static class Day15
     {
-
         private const int _nbBoxes = 256;
         private static List<(string label, int focalLength)>[] _boxes = [];
         public static void Solve(int part)
@@ -22,15 +13,20 @@ namespace AdventOfCode2023
             if (part == 1) Console.WriteLine(input.Sum(HASH));
             else
             {
-                _boxes = Enumerable.Range(0, _nbBoxes).Select(i => new List<(string label, int focalLength)>()).ToArray();
-                foreach (var instruction in input) ProcessInstruction(instruction);
+                _boxes = Enumerable
+                    .Range(0, _nbBoxes)
+                    .Select(i => new List<(string label, int focalLength)>())
+                    .ToArray();
+
+                foreach (var instruction in input) instruction.Process();
+
                 Console.WriteLine(_boxes.HASHMAP());
             }
         }
         
         private static int HASH (this string s) => s.Aggregate(0, (a, b) => ((a + b) * 17) % 256);
 
-        private static void ProcessInstruction(string instruction)
+        private static void Process(this string instruction)
         {
             string regex = @"(?<label>\w+)(?<operation>[=-])(?<focalLength>\d+)?";
             Match match = Regex.Match(instruction, regex);
@@ -49,10 +45,9 @@ namespace AdventOfCode2023
             }
         }
 
-        private static void RemoveLense (int boxIndex, string label)
-        {
-            _boxes[boxIndex] = _boxes[boxIndex].Where(lense => lense.label != label).ToList();
-        }
+        private static void RemoveLense (int boxIndex, string label) => _boxes[boxIndex]
+            .Remove(_boxes[boxIndex]
+                .FirstOrDefault(lense => lense.label == label));
 
         private static void AddLense (int boxIndex, string label, int focalLength)
         {
@@ -64,7 +59,10 @@ namespace AdventOfCode2023
                 return;
             }
             
-            int indexLenseToReplace = box.IndexOf(box.First(lense => lense.label == label));
+            int indexLenseToReplace = box
+                .IndexOf(box
+                    .First(lense => lense.label == label));
+            
             box[indexLenseToReplace] = (label, focalLength);
         }
 
