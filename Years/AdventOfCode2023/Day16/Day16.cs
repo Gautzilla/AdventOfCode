@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-
 namespace AdventOfCode2023
 {
     public static class Day16
@@ -44,32 +37,53 @@ namespace AdventOfCode2023
                 .Select(line => line.ToArray())
                 .ToArray();
 
-            _beams.Enqueue(((0,0), Direction.East));
+            if (part == 1)
+            {
+                _beams.Enqueue(((0,0), Direction.East));
+                while (_beams.Count > 0) MoveBeam();
+                Console.WriteLine(_energizedTiles.Count);
+            } else
+            {
+                int nbMaxEnergizedTiles = int.MinValue;
+                for (int x = 0; x < _layoutSize.x; x++) 
+                {
+                    FindEnergizedTiles((x,0), Direction.South);
+                    nbMaxEnergizedTiles = Math.Max(nbMaxEnergizedTiles, _energizedTiles.Count);
+                }
+                for (int x = 0; x < _layoutSize.x; x++) 
+                {
+                    FindEnergizedTiles((x,_layoutSize.y - 1), Direction.North);
+                    nbMaxEnergizedTiles = Math.Max(nbMaxEnergizedTiles, _energizedTiles.Count);
+                }
+                for (int y = 0; y < _layoutSize.y; y++) 
+                {
+                    FindEnergizedTiles((0,y), Direction.East);
+                    nbMaxEnergizedTiles = Math.Max(nbMaxEnergizedTiles, _energizedTiles.Count);
+                }
+                for (int y = 0; y < _layoutSize.x; y++) 
+                {
+                    FindEnergizedTiles((_layoutSize.x-1,y), Direction.West);
+                    nbMaxEnergizedTiles = Math.Max(nbMaxEnergizedTiles, _energizedTiles.Count);
+                }
+                Console.WriteLine(nbMaxEnergizedTiles);
+            }
+        }
 
-            //Console.WriteLine(String.Join("\r\n",Enumerable.Range(0,_layoutSize.y).Select(y => string.Join("", Enumerable.Range(0, _layoutSize.x).Select(x => _encounters[y][x])))));
-
+        private static void FindEnergizedTiles((int x, int y) startingCoordinates, Direction startingDirection)
+        {
+            _visitedTiles = [];
+            _energizedTiles = [];
+            _beams.Enqueue((startingCoordinates, startingDirection));
             while (_beams.Count > 0) MoveBeam();
-
-            Console.WriteLine(_energizedTiles.Count);
-
-            //Console.WriteLine(String.Join("\r\n",Enumerable.Range(0,_layoutSize.y).Select(y => string.Join("", Enumerable.Range(0, _layoutSize.x).Select(x => _encounters[y][x])))));
-            //Console.WriteLine(String.Join("\r\n",Enumerable.Range(0,_layoutSize.y).Select(y => string.Join("", Enumerable.Range(0, _layoutSize.x).Select(x => _energizedTiles.Contains((x,y)) ? '#' : '.')))));
         }
 
         private static void MoveBeam()
         {
             var (coordinates, direction) = _beams.Dequeue();
-
+            if (!coordinates.IsInsideLayout()) return;
             _visitedTiles.Add((coordinates.x, coordinates.y, (int)direction));
 
-            //Console.WriteLine($"({coordinates.x},{coordinates.y}), moving {direction})");
-           // Console.ReadKey();
-
-            if (!coordinates.IsInsideLayout()) return;
-
             _energizedTiles.Add(coordinates);
-
-          //  Console.WriteLine(string.Join(" ", _energizedTiles.Select(coordinates => $"({coordinates.x},{coordinates.y})")));
 
             var encounter = _encounters[coordinates.y][coordinates.x];
             var nextDirections = _encounterDirection[encounter][(int)direction]; // Accounts for beam splitting
@@ -82,7 +96,5 @@ namespace AdventOfCode2023
         }
 
         private static bool IsInsideLayout (this (int x, int y) coordinates) => coordinates.x >= 0 && coordinates.x < _layoutSize.x && coordinates.y >= 0 && coordinates.y < _layoutSize.y ;
-
-
     }
 }
