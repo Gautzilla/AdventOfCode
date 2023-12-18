@@ -13,10 +13,12 @@ namespace AdventOfCode2023
         [Flags]
         enum Direction
         {
-            North,
-            East,
-            South,
-            West
+            North = 1,
+            East = 2,
+            South = 4,
+            West = 8,
+            Vertical = North | South,
+            Horizontal = East | West
         }
 
         private record Block
@@ -25,13 +27,18 @@ namespace AdventOfCode2023
 
             public int HeatLoss { get; set; }
 
-            public int[] MinHeatLost { get; set; }
+            public Dictionary<Direction, int> MinHeatLost { get; set; }
 
             public Block((int x, int y) coordinates, int heatLoss)
             {
                 Coordinates = coordinates;
                 HeatLoss = heatLoss;
-                MinHeatLost = Enumerable.Repeat(int.MaxValue, 4).ToArray();
+                MinHeatLost = new(){
+                    {Direction.North, int.MaxValue},
+                    {Direction.East, int.MaxValue},
+                    {Direction.South, int.MaxValue},
+                    {Direction.West, int.MaxValue}
+                };
             }
         }
 
@@ -51,9 +58,9 @@ namespace AdventOfCode2023
 
             ParseMap(input);
 
-            FindMinHeatLossPath();
+            FindMinHeatLossPath(part);
 
-            Console.WriteLine(_map[_map.GetLength(0)-1, _map.GetLength(1)-1].MinHeatLost.Min());
+            Console.WriteLine(_map[_map.GetLength(0)-1, _map.GetLength(1)-1].MinHeatLost.Values.Min());
         }
 
         private static void ParseMap(string[] input)
@@ -69,9 +76,12 @@ namespace AdventOfCode2023
             }
         }
 
-        private static void FindMinHeatLossPath()
+        private static void FindMinHeatLossPath(int part)
         {
-            _queue.Enqueue((_map[0,0], 0, Direction.East | Direction.South));
+            _queue.Enqueue((_map[0,0], 0, Direction.Vertical));
+            _queue.Enqueue((_map[0,0], 0, Direction.Horizontal));
+
+            (int nbMinStepsForward, int nbMaxStepsForward) = part == 1 ? (1,3) : (4,10);
 
             while (_queue.Count != 0)
             {
@@ -88,18 +98,18 @@ namespace AdventOfCode2023
 
                     int heatLoss = step.totalHeatLoss;                    
 
-                    if (block.MinHeatLost[(int)direction.Key] <= heatLoss) continue;
+                    if (block.MinHeatLost[direction.Key] <= heatLoss) continue;
 
-                    block.MinHeatLost[(int)direction.Key] = heatLoss;        
+                    block.MinHeatLost[direction.Key] = heatLoss;        
 
-                    for (int stepForward = 1; stepForward <= 3; stepForward++)
+                    for (int nbStepsForward = 1; nbStepsForward <= nbMaxStepsForward; nbStepsForward++)
                     {
-                        (int x, int y) nextCoordinates = (block.Coordinates.x + direction.Value.x * stepForward, block.Coordinates.y + direction.Value.y * stepForward);
+                        (int x, int y) nextCoordinates = (block.Coordinates.x + direction.Value.x * nbStepsForward, block.Coordinates.y + direction.Value.y * nbStepsForward);
                         if (!nextCoordinates.IsInsideMap()) continue;
 
                         heatLoss += _map[nextCoordinates.x,nextCoordinates.y].HeatLoss;
 
-                        _queue.Enqueue((_map[nextCoordinates.x, nextCoordinates.y], heatLoss, ~directions));
+                        if (nbStepsForward >= nbMinStepsForward) _queue.Enqueue((_map[nextCoordinates.x, nextCoordinates.y], heatLoss, ~directions));
                     }                    
                 }
             }
