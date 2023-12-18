@@ -51,7 +51,8 @@ namespace AdventOfCode2023
         };
 
         private static Block[,] _map = new Block[0,0];
-        private static Queue<(Block block, int totalHeatLoss, Direction direction)> _queue = [];
+        //private static Queue<(Block block, int totalHeatLoss, Direction direction)> _queue = [];
+        private static PriorityQueue<(Block block, int totalHeatLoss, Direction direction), int> _queue = new();
         public static void Solve(int part)
         { 
             string[] input = File.ReadAllLines(@"Day17\input.txt");
@@ -78,8 +79,8 @@ namespace AdventOfCode2023
 
         private static void FindMinHeatLossPath(int part)
         {
-            _queue.Enqueue((_map[0,0], 0, Direction.Vertical));
-            _queue.Enqueue((_map[0,0], 0, Direction.Horizontal));
+            _queue.Enqueue((_map[0,0], 0, Direction.Vertical), 0);
+            _queue.Enqueue((_map[0,0], 0, Direction.Horizontal), 0);
 
             (int nbMinStepsForward, int nbMaxStepsForward) = part == 1 ? (1,3) : (4,10);
 
@@ -88,7 +89,7 @@ namespace AdventOfCode2023
                 var step = _queue.Dequeue();
 
                 Block block = step.block;
-                Direction directions = step.direction;
+                Direction directions = step.direction;                
 
                 if (!block.IsInsideMap()) continue;
                 
@@ -100,7 +101,9 @@ namespace AdventOfCode2023
 
                     if (block.MinHeatLost[direction.Key] <= heatLoss) continue;
 
-                    block.MinHeatLost[direction.Key] = heatLoss;        
+                    block.MinHeatLost[direction.Key] = heatLoss;    
+
+                    if (block == _map[_map.GetLength(0)-1, _map.GetLength(1)-1]) break;
 
                     for (int nbStepsForward = 1; nbStepsForward <= nbMaxStepsForward; nbStepsForward++)
                     {
@@ -109,7 +112,7 @@ namespace AdventOfCode2023
 
                         heatLoss += _map[nextCoordinates.x,nextCoordinates.y].HeatLoss;
 
-                        if (nbStepsForward >= nbMinStepsForward) _queue.Enqueue((_map[nextCoordinates.x, nextCoordinates.y], heatLoss, ~directions));
+                        if (nbStepsForward >= nbMinStepsForward) _queue.Enqueue((_map[nextCoordinates.x, nextCoordinates.y], heatLoss, ~directions), heatLoss);
                     }                    
                 }
             }
