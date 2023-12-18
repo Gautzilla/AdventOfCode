@@ -84,7 +84,7 @@ namespace AdventOfCode2023
                 
                 foreach (var direction in _directions)
                 {
-                    if ((directions & direction.Key) != direction.Key) continue;
+                    if (!directions.HasFlag(direction.Key)) continue;
 
                     int heatLoss = step.totalHeatLoss;                    
 
