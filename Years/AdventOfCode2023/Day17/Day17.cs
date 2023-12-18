@@ -31,7 +31,7 @@ namespace AdventOfCode2023
             {
                 Coordinates = coordinates;
                 HeatLoss = heatLoss;
-                MinHeatLost = Enumerable.Repeat(int.MinValue, 4).ToArray();
+                MinHeatLost = Enumerable.Repeat(int.MaxValue, 4).ToArray();
             }
         }
 
