@@ -27,8 +27,17 @@ namespace AdventOfCode2023
             string direction;
             int distance;
 
-            direction = parts.First();
-            distance = int.Parse(parts[1]);            
+            if (part == 1)
+            {
+                direction = parts.First();
+                distance = int.Parse(parts[1]);
+            } else
+            {
+                string hex = parts.Last()[2..^1];
+                distance = int.Parse(hex[..^1], System.Globalization.NumberStyles.HexNumber);
+                direction = "RDLU"[(int)char.GetNumericValue(hex.Last())].ToString();
+            }
+            
             
             (long x, long y) newCoordinates = _coordinates.Last().Move(_directions[direction], distance);  
 
