@@ -69,7 +69,7 @@ namespace AdventOfCode2023
                     subRatingRange.Ranges[indexBase + indexModifier] = value;
                     SendInstruction(subRatingRange, destination);
                     
-                    ratingRange.Ranges[indexBase + (1-indexModifier)*(1-indexModifier)] = value + (indexModifier == 0 ? 1 : -1); // Removes the subRatingRange from the current ratingRange
+                    ratingRange.Ranges[indexBase + (indexModifier == 1 ? 0 : 1)] = value + (indexModifier == 0 ? 1 : -1); // Removes the subRatingRange from the current ratingRange
                 }
             }
 
@@ -137,6 +137,6 @@ namespace AdventOfCode2023
 
         private static void ParseRatings(string[] input) => _ratings
             .AddRange(input
-                .Select(i => new Rating(i)));
+                .Select(line => new Rating(line)));
     }
 }
