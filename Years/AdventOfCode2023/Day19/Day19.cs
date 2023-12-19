@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode2023
@@ -12,10 +6,11 @@ namespace AdventOfCode2023
     {
         class RatingRange
         {
-            public int[] Ranges { get; set; } = [..Enumerable.Range(0,8).Select(i => i%2 == 0 ? int.MinValue : int.MaxValue)]; // xMin, xMax, mMin, mMax, aMin, aMax, sMin, sMax
+            public int[] Ranges { get; set; } = [..Enumerable.Range(0,8).Select(i => i%2 == 0 ? 0 : 4001)]; // Exclusive xMin, xMax, mMin, mMax, aMin, aMax, sMin, sMax
             public bool IsAccepted { get; set; }
+            public long Size => new int[] { 1, 3, 5, 7 }.Select(i => Ranges[i] - Ranges[i - 1] - 1).Aggregate((long)1, (a, b) => a * b); // - 1 because both borders are exclusive
 
-             public RatingRange()
+            public RatingRange()
             {
                 IsAccepted = false;
             }
@@ -57,7 +52,7 @@ namespace AdventOfCode2023
                 {
                     string destination = instruction.Split(':').Last();
 
-                    if (!instruction.Contains(':'))
+                    if (!instruction.Contains(':')) // Directly accepted or rejected
                     {
                         SendInstruction(ratingRange, destination);
                         continue;
@@ -65,7 +60,7 @@ namespace AdventOfCode2023
                     
                     string operation = instruction.Split(':').First();
                     int indexBase = "xmas".IndexOf(operation.First()) * 2;
-                    int indexModifier = "><".IndexOf(operation[1]);
+                    int indexModifier = "><".IndexOf(operation[1]); // Index where to store the value (ex: x<n : store n as in "x in ]1, n[")
 
                     int value = int.Parse(operation[2..]);
 
@@ -74,7 +69,7 @@ namespace AdventOfCode2023
                     subRatingRange.Ranges[indexBase + indexModifier] = value;
                     SendInstruction(subRatingRange, destination);
                     
-                    ratingRange.Ranges[indexBase + (1-indexModifier)*(1-indexModifier)] = value + (indexModifier == 0 ? 1 : -1);
+                    ratingRange.Ranges[indexBase + (1-indexModifier)*(1-indexModifier)] = value + (indexModifier == 0 ? 1 : -1); // Removes the subRatingRange from the current ratingRange
                 }
             }
 
@@ -124,8 +119,9 @@ namespace AdventOfCode2023
             ParseWorkflows(input);
             ParseRatingRanges();            
             ParseRatings(input[(_workflows.Count+1)..]);
-
-            Console.WriteLine(_ratings.Where(r => r.IsAccepted).Select(r => r.X + r.M + r.A + r.S).Sum());
+            
+            if (part == 1) Console.WriteLine(_ratings.Where(r => r.IsAccepted).Select(r => r.X + r.M + r.A + r.S).Sum());
+            else Console.WriteLine(_ratingRanges.Where(r => r.IsAccepted).Sum(range => range.Size));
         }
 
         private static void ParseWorkflows(string[] input)
@@ -133,12 +129,11 @@ namespace AdventOfCode2023
             foreach (string line in input)
             {
                 if (line == string.Empty) break;
-
                 _workflows.Add(new Workflow(line));
             }
         }
 
-        private static void ParseRatingRanges() => _workflows.Single(w => w.Name == "in").ProcessInstructions(new());
+        private static void ParseRatingRanges() => _workflows.Single(w => w.Name == "in").ProcessInstructions(new()); // Initializes the rating ranges by passing the whole possible range to the first workflow
 
         private static void ParseRatings(string[] input) => _ratings
             .AddRange(input
