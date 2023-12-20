@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Data;
+using System.Numerics;
 
 namespace AdventOfCode2023
 { 
@@ -21,10 +14,7 @@ namespace AdventOfCode2023
             {
                 foreach (var destination in ConnectedModules) 
                 {
-                    //Console.WriteLine($"{Name} -{(pulse ? "high" : "low")}-> {destination.Name}");
-
                     _nbPulseSent[pulse ? 1 : 0]++;
-
                     _pulses.Enqueue((destination, this, pulse));
                 }
             }
@@ -38,7 +28,9 @@ namespace AdventOfCode2023
             {
                 if (module.GetType() == typeof(Conjuction))
                 {
-                    (module as Conjuction)!.Memory.Add(this,false);
+                    Conjuction conj = (module as Conjuction)!;
+                    conj.Memory.Add(this,false);
+                    conj.LoopLength.Add(this, null);
                 }
 
                 ConnectedModules.Add(module);
@@ -50,7 +42,6 @@ namespace AdventOfCode2023
             public bool State { get; set; } = false;
             public override void ReceivePulse(bool pulse, Module from)
             {
-                //Console.WriteLine($"{Name} receives {(pulse ? "high" : "low")} pulse.");
                 if (pulse) return;
 
                 State = !State;
@@ -66,11 +57,18 @@ namespace AdventOfCode2023
         class Conjuction : Module
         {
             public Dictionary<Module, bool> Memory { get; set; } = [];
+            public Dictionary<Module, long?> LoopLength { get; set; } = [];
 
             public override void ReceivePulse(bool pulse, Module from)
             {
-                //Console.WriteLine($"{Name} receives {(pulse ? "high" : "low")} pulse.");
                 Memory[from] = pulse;
+
+                if (pulse && Name == "bn" && !LoopLength[from].HasValue)
+                {
+                    LoopLength[from] = _nbButtonPressed;
+                    if (LoopLength.All(l => l.Value.HasValue)) _machineIsUp = true;
+                }
+
                 SendPulse(Memory.Any(pulse => !pulse.Value));
             }
 
@@ -84,7 +82,6 @@ namespace AdventOfCode2023
         {
             public override void ReceivePulse(bool pulse, Module from)
             {
-                //Console.WriteLine($"{Name} receives {(pulse ? "high" : "low")} pulse.");
                 SendPulse(pulse);
             }
 
@@ -111,6 +108,8 @@ namespace AdventOfCode2023
         private static Queue<(Module destination, Module from, bool pulse)> _pulses = [];
 
         private static int[] _nbPulseSent = [0,0];
+        private static bool _machineIsUp = false;
+        private static int _nbButtonPressed = 0;
 
         public static void Solve(int part)
         { 
@@ -121,22 +120,32 @@ namespace AdventOfCode2023
             
             Broadcast broadcaster = (_modules.Single(m => m.Name == "broadcaster") as Broadcast)!;
             
-            for (int i = 0; i < 1000; i ++)
+            _nbButtonPressed = 0;
+
+            while (true)
             {
+                _nbButtonPressed++;
+
                 _pulses.Enqueue((broadcaster, broadcaster, false));
                 _nbPulseSent[0]++;
 
                 while (_pulses.Count != 0)
                 {             
                     var send = _pulses.Dequeue();
-                    //Console.WriteLine($"{(send.pulse ? "high" : "low")} pulse sent to {send.destination.Name}");
                     send.destination.ReceivePulse(send.pulse, send.from);
                 }
                 //Console.ReadKey();
+
+                
+                if(part == 1 && _nbButtonPressed == 1000) break;
+                if (part == 2 && _machineIsUp) break;
             }
 
-            Console.WriteLine($" {_nbPulseSent[0]} * {_nbPulseSent[1]} = {_nbPulseSent[0] * _nbPulseSent[1]}");
+            long result = _nbPulseSent[0] * _nbPulseSent[1];
+
+            if (part == 2) result = LCM(_modules.OfType<Conjuction>().Single(m => m.Name == "bn").LoopLength.Select(l => l.Value).OfType<long>());
             
+            Console.WriteLine(result);
         }
 
         private static void CreateModule (string line)
@@ -178,5 +187,13 @@ namespace AdventOfCode2023
 
             foreach (var connection in connected) module.AddConnection(connection); 
         }
+
+        private static long GCD(long n1, long n2)
+        {
+            if (n2 == 0) return n1;
+            return GCD(n2, n1 % n2);            
+        }
+
+        private static long LCM(IEnumerable<long> numbers) => numbers.Aggregate((S, val) => S * val / GCD(S, val));
     }
 }
