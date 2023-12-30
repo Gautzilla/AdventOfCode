@@ -14,16 +14,40 @@ namespace AdventOfCode2023
         private static HashSet<(int x, int y)> _reachableCoordinates = [];
         private static HashSet<(int x, int y)> _seenCoordinates = [];
         private static Queue<(int x, int y, int step)> next = [];
-        private const int nbSteps = 64;
+        private static (int x, int y) _startingPos;
+        private static int nbSteps = 64;
+        private const int _nbStepsPart2 = 26501365;
+
         public static void Solve(int part)
         { 
             string[] input = File.ReadAllLines(@"Day21\input.txt");
 
             _rocks = ParseMap(input);
 
-            while(next.Count != 0) BFS(next.Dequeue(), part);
+            int nbPoints = part == 1 ? 1 : 3;
 
-            Console.WriteLine(_reachableCoordinates.Count);
+            (long x, long y)[] results = Enumerable.Repeat((0L,0L), nbPoints).ToArray();
+            
+            for (int i = 0; i < nbPoints; i++)
+            {
+                if (part == 2) nbSteps = _nbStepsPart2 % input.Length + i * 2 * input.Length;                
+                RunBFS(part); // Loop each 2*input.Length steps, starting at 65
+
+                results[i] = (nbSteps, _reachableCoordinates.Count);
+            }
+
+            Console.WriteLine(string.Join("\r\n", results.Select(r => $"{r.x} {r.y}"))); // For part 2: run a quadratic interpolation on the 3 points.
+        }
+
+        private static void RunBFS(int part)
+        {
+            _reachableCoordinates = [];
+            _seenCoordinates = [];
+
+            next.Enqueue((_startingPos.x, _startingPos.y, nbSteps));
+            _seenCoordinates.Add(_startingPos);
+
+            while(next.Count != 0) BFS(next.Dequeue(), part);   
         }
 
         private static bool[][] ParseMap(string[] input)
@@ -36,11 +60,7 @@ namespace AdventOfCode2023
                     .Select(c => c == '#')
                     .ToArray();
                     
-                if (input[y].Contains('S')) 
-                {
-                    next.Enqueue((input[y].IndexOf('S'), y, nbSteps));
-                    _seenCoordinates.Add((input[y].IndexOf('S'), y));
-                }
+                if (input[y].Contains('S')) _startingPos = (input[y].IndexOf('S'), y);
             }
 
             return output;
