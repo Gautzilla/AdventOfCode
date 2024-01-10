@@ -364,3 +364,7 @@ FodyWeavers.xsd
 .vscode/extensions.json
 AdventOfCode2022/.vscode/launch.json
 AdventOfCode2022/.vscode/tasks.json
+
+input.txt
+day*.txt
+day*Example.txt
