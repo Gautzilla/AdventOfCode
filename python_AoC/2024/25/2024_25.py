@@ -1,7 +1,7 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 
-def solve() -> tuple[int, int]:
+def solve(puzzle_input: str) -> tuple[any, any]:
 	part_one = 0
 	part_two = 0
 
@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	i = read_input(example = True)
 
 	t_start = Timestamp.now()
-	p1, p2 = solve()
+	p1, p2 = solve(puzzle_input=i)
 	t_stop = Timestamp.now()
 	t = Timedelta(t_stop - t_start).total_seconds()
 
