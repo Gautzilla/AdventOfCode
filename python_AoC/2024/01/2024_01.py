@@ -1,18 +1,24 @@
-with open("example_input.txt") as e:
-	example_input = e.read()
+from template_creator import read_input
+from pandas import Timestamp, Timedelta
 
-with open("puzzle_input.txt") as i:
-	puzzle_input = i.read()
+def solve() -> tuple[int, int]:
+    lines = [[int(v) for v in line.split()] for line in i.split("\n")]
+    list_one = sorted(line[0] for line in lines)
+    list_two = sorted(line[1] for line in lines)
 
-inputs = [example_input, puzzle_input]
-i = inputs[1]
+    part_one = sum(abs(c[1] - c[0]) for c in zip(list_one, list_two))
+    part_two = sum(v * sum(1 for i in list_two if i == v) for v in list_one)
 
-lines = [[int(v) for v in line.split(" ") if v] for line in i.split("\n")]
-list_one = sorted(line[0] for line in lines)
-list_two = sorted(line[1] for line in lines)
+    return part_one, part_two
 
-part_one = sum(abs(c[1] - c[0]) for c in zip(list_one, list_two))
-part_two = sum(v * sum(1 for i in list_two if i == v) for v  in list_one)
+if __name__ == "__main__":
+    i = read_input(example = False)
 
-print(part_one)
-print(part_two)
+    t_start = Timestamp.now()
+    p1, p2 = solve()
+    t_stop = Timestamp.now()
+    t = Timedelta(t_stop - t_start).total_seconds()
+
+    print(f"{'Part one':<20}{p1:>10}")
+    print(f"{'Part two':<20}{p2:>10}")
+    print(f"\nSolved in {t} second.")

@@ -1,6 +1,15 @@
 from pathlib import Path
 from pandas import Timestamp
 
+def read_input(example: bool) -> str:
+    with open("example_input.txt") as e:
+        example_input = e.read()
+
+    with open("puzzle_input.txt") as i:
+        puzzle_input = i.read()
+
+    return example_input if example else puzzle_input
+
 class Solver:
     def __init__(self, year: int, day: int, template: str):
         self.year = year
