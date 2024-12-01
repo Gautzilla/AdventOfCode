@@ -368,3 +368,6 @@ AdventOfCode2022/.vscode/tasks.json
 input.txt
 day*.txt
 day*Example.txt
+
+*input.txt
+.idea/

@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1626f1d4-ac47-4439-bdec-0e6c092b2e64" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/2015/01/2015_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/2015/01/2015_01.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2015/01/puzzle_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/2015/01/puzzle_input.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2015/02/2015_02.py" beforeDir="false" afterPath="$PROJECT_DIR$/2015/02/2015_02.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2015/02/example_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/2015/02/example_input.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2015/02/puzzle_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/2015/02/puzzle_input.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +29,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.2015_01.executor": "Run",
+    "Python.2015_02.executor": "Run",
     "Python.2024_01.executor": "Run",
     "Python.template_creator.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
