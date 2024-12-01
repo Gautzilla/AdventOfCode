@@ -39,4 +39,4 @@ def create_solvers(year: int) -> None:
         solver.to_file(year_folder = year_folder_path)
 
 if __name__ == "__main__":
-    create_solvers(2024)
+    create_solvers(2015)

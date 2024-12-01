@@ -1,9 +1,15 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 
+def part1(puzzle_input: str) -> any:
+	pass
+
+def part2(puzzle_input: str) -> any:
+	pass
+
 def solve(puzzle_input: str) -> tuple[any, any]:
-	part_one = 0
-	part_two = 0
+	part_one = part1(puzzle_input)
+	part_two = part2(puzzle_input)
 
 	return part_one, part_two
 
