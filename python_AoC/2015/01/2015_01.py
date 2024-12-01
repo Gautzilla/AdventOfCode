@@ -27,4 +27,4 @@ if __name__ == "__main__":
 
 	print(f"{'Part one':<20}{p1:>10}")
 	print(f"{'Part two':<20}{p2:>10}")
-	print(f"\nSolved in {t} second.")
+	print(f"\nSolved in {t} second{'s' if t >= 2 else ''}.")

@@ -22,10 +22,8 @@ class Solver:
     def to_file(self, year_folder: Path):
         directory = year_folder / f"{self.day:>02}"
         directory.mkdir(parents = True, exist_ok=True)
-        with open(directory/"example_input.txt", "w") as e:
-            e.write("")
-        with open(directory/"puzzle_input.txt", "w") as i:
-            i.write("")
+        open(directory / "example_input.txt", "a").close()
+        open(directory / "puzzle_input.txt", "a").close()
         with open(directory / f"{str(self)}.py", "w") as f:
             f.write(self.template)
         print(f"Created {str(self)} in {year_folder}")
@@ -39,4 +37,4 @@ def create_solvers(year: int) -> None:
         solver.to_file(year_folder = year_folder_path)
 
 if __name__ == "__main__":
-    create_solvers(2015)
+    create_solvers(2016)
