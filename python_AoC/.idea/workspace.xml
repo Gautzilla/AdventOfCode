@@ -5,36 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1626f1d4-ac47-4439-bdec-0e6c092b2e64" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/01/2024_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/01/2024_01.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/01/example_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/2024/01/example_input.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/01/puzzle_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/2024/01/puzzle_input.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/02/2024_02.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/02/2024_02.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/03/2024_03.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/03/2024_03.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/04/2024_04.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/04/2024_04.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/05/2024_05.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/05/2024_05.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/06/2024_06.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/06/2024_06.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/07/2024_07.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/07/2024_07.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/08/2024_08.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/08/2024_08.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/09/2024_09.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/09/2024_09.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/10/2024_10.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/10/2024_10.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/11/2024_11.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/11/2024_11.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/12/2024_12.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/12/2024_12.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/13/2024_13.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/13/2024_13.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/14/2024_14.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/14/2024_14.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/15/2024_15.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/15/2024_15.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/16/2024_16.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/16/2024_16.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/17/2024_17.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/17/2024_17.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/18/2024_18.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/18/2024_18.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/19/2024_19.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/19/2024_19.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/20/2024_20.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/20/2024_20.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/21/2024_21.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/21/2024_21.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/22/2024_22.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/22/2024_22.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/23/2024_23.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/23/2024_23.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/24/2024_24.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/24/2024_24.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2024/25/2024_25.py" beforeDir="false" afterPath="$PROJECT_DIR$/2024/25/2024_25.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/puzzle_template.py" beforeDir="false" afterPath="$PROJECT_DIR$/puzzle_template.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/template_creator.py" beforeDir="false" afterPath="$PROJECT_DIR$/template_creator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2015/01/2015_01.py" beforeDir="false" afterPath="$PROJECT_DIR$/2015/01/2015_01.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2015/01/puzzle_input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/2015/01/puzzle_input.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,14 +24,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.2024_01.executor&quot;: &quot;Run&quot;,
-    &quot;Python.template_creator.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.2015_01.executor": "Run",
+    "Python.2024_01.executor": "Run",
+    "Python.template_creator.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
