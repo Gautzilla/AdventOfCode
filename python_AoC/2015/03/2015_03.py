@@ -1,29 +1,31 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
+from collections import namedtuple
 
+Position = namedtuple("Position", "x y")
 directions = {
-	">": (1,0),
-	"^": (0,1),
-	"v": (0,-1),
-	"<": (-1,0),
+	">": Position(1,0),
+	"^": Position(0,1),
+	"v": Position(0,-1),
+	"<": Position(-1,0),
 }
 
-def deliver(instructions: str, position: tuple[int, int], visited_houses: set) -> None:
+def deliver(instructions: str, position: Position, visited_houses: set) -> None:
 	visited_houses.add(position)
 	for c in instructions:
 		direction = directions[c]
-		position = (position[0] + direction[0], position[1] + direction[1])
+		position = Position(position.x + direction.x, position.y + direction.y)
 		visited_houses.add(position)
 
 def part1(puzzle_input: str) -> int:
 	visited_houses = set()
-	deliver(instructions=puzzle_input, position=(0,0), visited_houses=visited_houses)
+	deliver(instructions=puzzle_input, position=Position(0,0), visited_houses=visited_houses)
 	return len(visited_houses)
 
 def part2(puzzle_input: str) -> int:
 	visited_houses = set()
-	deliver(instructions=puzzle_input[::2], position=(0, 0), visited_houses=visited_houses)
-	deliver(instructions=puzzle_input[1::2], position=(0, 0), visited_houses=visited_houses)
+	deliver(instructions=puzzle_input[::2], position=Position(0, 0), visited_houses=visited_houses)
+	deliver(instructions=puzzle_input[1::2], position=Position(0, 0), visited_houses=visited_houses)
 	return len(visited_houses)
 
 def solve(puzzle_input: str) -> tuple[any, any]:
