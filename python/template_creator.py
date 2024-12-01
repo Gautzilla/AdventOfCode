@@ -6,7 +6,7 @@ class Solver:
         self.year = year
         self.day = day
 
-    SOLVER_TEMPLATE = 'with open("example_input.txt") as e:\n\texample_input = e\n\nwith open("puzzle_input.txt") as i:\n\tpuzzle_input = i'
+    SOLVER_TEMPLATE = 'with open("example_input.txt") as e:\n\texample_input = e.read()\n\nwith open("puzzle_input.txt") as i:\n\tpuzzle_input = i.read()'
 
     def __repr__(self):
         return f"{self.year}_{self.day:>02}"
