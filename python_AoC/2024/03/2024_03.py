@@ -3,23 +3,24 @@ from pandas import Timestamp, Timedelta
 import re
 
 PATTERN = r"mul\((?P<n1>\d{1,3}),(?P<n2>\d{1,3})\)"
+PATTERNS_PART2 = rf"(?P<operation>{PATTERN})|(?P<disable>don't)|(?P<enable>do(?!n't))"
 
 def part1(memory: str) -> any:
 	values = re.findall(PATTERN, memory)
 	return sum(int(a) * int(b) for a, b in values)
 
-def remove_disabled_parts(memory: str) -> str:
-	if "don't" not in memory:
-		return memory
-	dont_index = memory.index("don't")
-	do_index = list(i.regs[0][1] for i in re.finditer("do(?!n't)", memory))
-	do_index = [idx for idx in do_index if idx > dont_index]
-	do_index = len(memory) - 1 if not do_index else do_index[0]
-	return remove_disabled_parts(memory[:dont_index] + memory[do_index:])
-
 def part2(memory: str) -> any:
-	memory = remove_disabled_parts(memory)
-	return part1(memory)
+	is_enabled = True
+	sum = 0
+	for match in re.finditer(PATTERNS_PART2, memory):
+		groups = match.groupdict()
+		if groups["enable"]:
+			is_enabled = True
+		if groups["disable"]:
+			is_enabled = False
+		if is_enabled and (mul := groups["operation"]):
+			sum += part1(mul)
+	return sum
 
 def solve(puzzle_input: str) -> tuple[any, any]:
 	part_one = part1(puzzle_input)
