@@ -12,12 +12,7 @@ def letter_positions(grid: np.ndarray, letter: str) -> list[tuple[int,int]]:
 	return list((int(x), int(y)) for x,y in zip(*np.where(grid == letter)))
 
 def is_in_grid(grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
-	for axis in range(len(coordinates)):
-		if axis > len(grid.shape):
-			return False
-		if coordinates[axis] < 0 or coordinates[axis] >= grid.shape[axis]:
-			return False
-	return True
+	return all(0 <= coordinates[axis] < grid.shape[axis] for axis in (0,1))
 
 def count_xmas_spelled(grid: np.ndarray, coordinates: tuple[int,int]) -> int:
 	return sum(spells_xmas(grid, coordinates, direction) for direction in all_directions)
