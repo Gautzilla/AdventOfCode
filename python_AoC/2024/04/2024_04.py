@@ -2,11 +2,11 @@ from template_creator import read_input
 from pandas import Timestamp, Timedelta
 import numpy as np
 
-all_directions = [(0, 1), (1, 1), (1, 0), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
-diagonals = [[(-1,-1), (0,0), (1,1)], [(-1,1), (0,0), (1,-1)]]
+ALL_DIRECTIONS = [(0, 1), (1, 1), (1, 0), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
+DIAGONALS = [[(-1, -1), (0, 0), (1, 1)], [(-1, 1), (0, 0), (1, -1)]]
 
 def parse_input(input: str) -> np.ndarray:
-	return np.array([[letter for letter in line] for line in input.splitlines()])
+	return np.array([list(line) for line in input.splitlines()])
 
 def letter_positions(grid: np.ndarray, letter: str) -> list[tuple[int,int]]:
 	return list((int(x), int(y)) for x,y in zip(*np.where(grid == letter)))
@@ -15,7 +15,7 @@ def is_in_grid(grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
 	return all(0 <= coordinates[axis] < grid.shape[axis] for axis in (0,1))
 
 def count_xmas_spelled(grid: np.ndarray, coordinates: tuple[int,int]) -> int:
-	return sum(spells_xmas(grid, coordinates, direction) for direction in all_directions)
+	return sum(spells_xmas(grid, coordinates, direction) for direction in ALL_DIRECTIONS)
 
 def spells_xmas(grid: np.ndarray, coordinates: tuple[int,int], direction: tuple[int,int]) -> bool:
 	target = "XMAS"
@@ -24,12 +24,12 @@ def spells_xmas(grid: np.ndarray, coordinates: tuple[int,int], direction: tuple[
 			return False
 		if grid[coordinates] != target_char:
 			return False
-		coordinates = (coordinates[0] + direction[0], coordinates[1] + direction[1])
+		coordinates = tuple(map(sum, zip(direction, coordinates)))
 	return True
 
 def is_x_shaped_mas(grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
 	target = "MAS"
-	for diagonal in diagonals:
+	for diagonal in DIAGONALS:
 		all_coordinates = [(coordinates[0] + d[0], coordinates[1] + d[1]) for d in diagonal]
 		if not all(is_in_grid(grid, c) for c in all_coordinates):
 			return False
