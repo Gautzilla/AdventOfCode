@@ -19,6 +19,9 @@ def is_in_grid(grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
 			return False
 	return True
 
+def count_xmas_spelled(grid: np.ndarray, coordinates: tuple[int,int]) -> int:
+	return sum(spells_xmas(grid, coordinates, direction) for direction in all_directions)
+
 def spells_xmas(grid: np.ndarray, coordinates: tuple[int,int], direction: tuple[int,int]) -> bool:
 	target = "XMAS"
 	for target_char in target:
@@ -40,7 +43,7 @@ def is_x_shaped_mas(grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
 	return True
 
 def part1(grid: np.ndarray) -> any:
-	return sum(1 for x in letter_positions(grid, "X") for xmas_start in (spells_xmas(grid, x, direction) for direction in all_directions) if xmas_start)
+	return sum(count_xmas_spelled(grid, x) for x in letter_positions(grid, "X"))
 
 def part2(grid: np.ndarray) -> any:
 	return sum(1 for a in letter_positions(grid, "A") if is_x_shaped_mas(grid, a))
