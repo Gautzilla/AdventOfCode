@@ -1,31 +1,27 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 
+EQUATIONS = {
+	1: [lambda x,y: x+y, lambda x,y: x*y],
+	2: [lambda x,y: x+y, lambda x,y: x*y, lambda x,y: int(str(x) + str(y))]
+}
+
 def is_solvable(result: int, numbers: list[int], current: int, index: int, part: int):
 	if len(numbers) == 0:
 		return current == result
 	if current > result:
 		return False
-	if part == 1:
-		return is_solvable(result, numbers[1:], current+numbers[0], index+1,part) or is_solvable(result, numbers[1:], current*numbers[0], index+1,part)
-	return is_solvable(result, numbers[1:], current + numbers[0], index + 1,part) or is_solvable(result, numbers[1:],
-																							current * numbers[0],
-																							index + 1,part) or is_solvable(result, numbers[1:],
-																							int(str(current)+str(numbers[0])),
-																							index + 1,part)
+	return any(is_solvable(result, numbers[1:], equation(current,numbers[0]), index+1, part) for equation in EQUATIONS[part])
 
-def part1(equations: list[tuple[int, list[int]]]) -> any:
-	return sum(equation[0] for equation in equations if is_solvable(equation[0], equation[1][1:], equation[1][0], 1,1))
-
-def part2(equations: list[tuple[int, list[int]]]) -> any:
-	return sum(equation[0] for equation in equations if is_solvable(equation[0], equation[1][1:], equation[1][0], 1,2))
+def solve_part(equations: list[tuple[int, list[int]]], part: int):
+	return sum(equation[0] for equation in equations if is_solvable(equation[0], equation[1][1:], equation[1][0], 1, part))
 
 def solve(puzzle_input: str) -> tuple[any, any]:
 	results = [int(line.split(":")[0]) for line in puzzle_input.splitlines()]
 	numbers = [[int(v) for v in line.split(":")[1].split()] for line in puzzle_input.splitlines()]
 	equations = list(zip(results, numbers))
-	part_one = part1(equations)
-	part_two = part2(equations)
+	part_one = solve_part(equations,1)
+	part_two = solve_part(equations,2)
 
 	return part_one, part_two
 
