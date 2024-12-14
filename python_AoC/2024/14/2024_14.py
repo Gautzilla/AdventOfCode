@@ -1,14 +1,15 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 import re
-import os
 
 def move_robots(robots, gx, gy, nb_times):
+	moved_robots = []
 	for robot in robots:
 		x,y,vx,vy = robot
-		robot[0] = (x + vx * nb_times + gx * (abs(x) // gx + 1)) % gx
-		robot[1] = (y + vy * nb_times + gy * (abs(y) // gy + 1)) % gy
-	return robots
+		x = (x + vx * nb_times + gx * (abs(x) // gx + 1)) % gx
+		y = (y + vy * nb_times + gy * (abs(y) // gy + 1)) % gy
+		moved_robots.append((x,y,vx,vy))
+	return moved_robots
 
 def print_robots(robots, gx, gy):
 	robots = [(x,y) for x,y,*_ in robots]
@@ -39,14 +40,13 @@ def part2(robots, gx, gy) -> any:
 def has_block(robots):
 	neighbours = ((-1,0),(-1,-1),(0,-1),(1,-1),(1,0),(1,1),(0,1),(-1,1))
 	robots = [(x,y) for x,y,*_ in robots]
-	return any(all((x+nx, y+ny) in robots for nx,ny in neighbours) for x,y in robots[::8])
+	return any(all((x+nx, y+ny) in robots for nx,ny in neighbours) for x,y in robots[::200])
 
 
 def solve(puzzle_input: str, example: bool) -> tuple[any, any]:
 	robots = [list(map(int,robot)) for robot in (re.search(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)", line).groups() for line in puzzle_input.splitlines())]
 	gx, gy = (11,7) if example else (101,103)
 	part_one = part1(robots, gx, gy)
-	robots = [list(map(int,robot)) for robot in (re.search(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)", line).groups() for line in puzzle_input.splitlines())]
 	part_two = part2(robots, gx, gy) if not example else ""
 
 	return part_one, part_two
