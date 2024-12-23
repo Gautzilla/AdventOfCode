@@ -1,20 +1,40 @@
+from scipy.cluster.hierarchy import complete
+
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 
-def part1(puzzle_input: str) -> any:
-	return ""
+cache = {}
+
+def search(towels, design):
+	if design == "":
+		return True
+	if design in cache:
+		return cache[design]
+	for towel in towels:
+		if design.startswith(towel) and search(towels, design[len(towel):]):
+			cache[design] = True
+			return True
+	cache[design] = False
+	return False
+
+def part1(towels, designs) -> any:
+	return len([design for design in designs if search(list(towels), design)])
+
 
 def part2(puzzle_input: str) -> any:
 	return ""
 
 def solve(puzzle_input: str) -> tuple[any, any]:
-	part_one = part1(puzzle_input)
+	inp = puzzle_input.splitlines()
+	towels = [t.strip() for t in inp[0].split(",")]
+	designs = inp[2:]
+	part_one = part1(towels, designs)
 	part_two = part2(puzzle_input)
 
 	return part_one, part_two
 
 if __name__ == "__main__":
-	i = read_input(example = True)
+	i = read_input(example = False)
 
 	t_start = Timestamp.now()
 	p1, p2 = solve(puzzle_input=i)
