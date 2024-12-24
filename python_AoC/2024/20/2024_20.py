@@ -4,8 +4,7 @@ from pandas import Timestamp, Timedelta
 DIRECTIONS = {(0,1),(1,0),(0,-1),(-1,0)}
 CHEAT_DIRECTIONS = {(1,-1), (2,0), (1,1), (0,2)}
 
-
-def part1(grid, start) -> any:
+def get_nb_cheats(grid, start, cheat_duration) -> any:
 	distances = [[-1] * len(grid[0]) for _ in range(len(grid))]
 	distances[start[1]][start[0]] = 0
 
@@ -21,17 +20,23 @@ def part1(grid, start) -> any:
 			break
 
 	nb_cheats = 0
+	seen = set()
 	for y, line in enumerate(distances):
 		for x, dist in enumerate(line):
 			if dist == -1:
 				continue
-			for x2,y2 in (map(sum, zip((x,y),d)) for d in CHEAT_DIRECTIONS):
-				if not (0 <= x2 < len(grid[0]) and 0 <= y2 < len(grid)):
-					continue
-				if distances[y2][x2] == -1:
-					continue
-				if abs(distances[y2][x2] - dist) >= 102:
-					nb_cheats += 1
+			for dy in range(-1 * cheat_duration, cheat_duration + 1):
+				for dx in range(cheat_duration - abs(dy) + 1):
+					x2,y2 = x+dx,y+dy
+					if not (0 <= x2 < len(grid[0]) and 0 <= y2 < len(grid)):
+						continue
+					if distances[y2][x2] == -1:
+						continue
+					seen.add(((x,y),(x2,y2)))
+					if ((x2,y2),(x,y)) in seen:
+						continue
+					if abs(distances[y2][x2] - dist) - dx - abs(dy) >= 100:
+						nb_cheats += 1
 
 	return nb_cheats
 
@@ -46,8 +51,8 @@ def solve(puzzle_input: str) -> tuple[any, any]:
 			if char == "S":
 				start = (x,y)
 
-	part_one = part1(grid, start)
-	part_two = part2(puzzle_input)
+	part_one = get_nb_cheats(grid, start, 2)
+	part_two = get_nb_cheats(grid, start, 20)
 
 	return part_one, part_two
 
