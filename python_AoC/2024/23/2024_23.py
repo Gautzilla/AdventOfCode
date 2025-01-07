@@ -2,29 +2,42 @@ from template_creator import read_input
 from pandas import Timestamp, Timedelta
 from itertools import combinations
 
-def part1(puzzle_input: str) -> any:
-	computers = {}
-	for line in puzzle_input.splitlines():
-		first, second = line.split("-")
-		for a,b in (first, second), (second, first):
-			if a not in computers:
-				computers[a] = [b]
-				continue
-			computers[a].append(b)
-	combs = set()
-	for computer, links in computers.items():
-		combs |= set(tuple(sorted(c)) for c in (combinations([computer] + links, 3)))
+def are_all_linked(computers: set, links: dict) -> bool:
+	return all(comp2 in links[comp1] for comp1 in computers for comp2 in computers - {comp1})
 
+def part1(computer_links: dict) -> any:
+	combs = set()
+	for computer, links in computer_links.items():
+		combs |= set(tuple(sorted(c)) for c in (combinations([computer] + links, 3)))
 	combs = (c for c in combs if any(s[0] == "t" for s in c))
-	combs = (c for c in combs if all(c2 in computers[c1] for c1 in c for c2 in (c3 for c3 in c if c3 != c1)))
+	combs = (c for c in combs if are_all_linked(set(c), computer_links))
 	return sum(1 for _ in combs)
 
-def part2(puzzle_input: str) -> any:
-	return ""
+def part2(computer_links: dict) -> any:
+	max_comb = []
+	for computer, links in computer_links.items():
+		comb_length = len(links) + 1
+		while comb_length > len(max_comb):
+			combs = combinations([computer] + links, comb_length)
+			for comb in combs:
+				if are_all_linked(set(comb), computer_links):
+					max_comb = list(sorted(comb))
+			comb_length -= 1
+
+	return ",".join(max_comb)
 
 def solve(puzzle_input: str) -> tuple[any, any]:
-	part_one = part1(puzzle_input)
-	part_two = part2(puzzle_input)
+	computer_links = {}
+	for line in puzzle_input.splitlines():
+		first, second = line.split("-")
+		for a, b in (first, second), (second, first):
+			if a not in computer_links:
+				computer_links[a] = [b]
+				continue
+			computer_links[a].append(b)
+
+	part_one = part1(computer_links)
+	part_two = part2(computer_links)
 
 	return part_one, part_two
 
