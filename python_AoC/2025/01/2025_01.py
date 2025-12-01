@@ -1,13 +1,14 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 
+
 def delta_dial(instruction: str) -> int:
     direction, distance = instruction[0], int(instruction[1:])
     direction = -1 if direction == "L" else 1
     return direction * distance
 
-def solve(puzzle_input: str) -> tuple[int, int]:
 
+def solve(puzzle_input: str) -> tuple[int, int]:
     part_one = 0
     part_two = 0
     pointer = 50
@@ -16,7 +17,7 @@ def solve(puzzle_input: str) -> tuple[int, int]:
         previous = pointer
         pointer += delta_dial(line)
 
-        if not pointer%100:
+        if not pointer % 100:
             part_one += 1
 
         part_two += abs(pointer) // 100
@@ -27,8 +28,9 @@ def solve(puzzle_input: str) -> tuple[int, int]:
 
     return part_one, part_two
 
+
 if __name__ == "__main__":
-    i = read_input(example = False)
+    i = read_input(example=False)
 
     t_start = Timestamp.now()
     p1, p2 = solve(puzzle_input=i)

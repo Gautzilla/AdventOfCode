@@ -1,6 +1,7 @@
 from template_creator import read_input
 from pandas import Timestamp, Timedelta
 
+
 def solve(puzzle_input: str) -> tuple[int, int]:
     lines = [[int(v) for v in line.split()] for line in puzzle_input.split("\n")]
     list_one = sorted(line[0] for line in lines)
@@ -11,8 +12,9 @@ def solve(puzzle_input: str) -> tuple[int, int]:
 
     return part_one, part_two
 
+
 if __name__ == "__main__":
-    i = read_input(example = False)
+    i = read_input(example=False)
 
     t_start = Timestamp.now()
     p1, p2 = solve(puzzle_input=i)
