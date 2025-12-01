@@ -32,9 +32,9 @@ def create_solvers(year: int) -> None:
     year_folder_path = Path(f"{Path.cwd()}/{year}")
     with open("puzzle_template.py") as t:
         template = t.read()
-    for day in range(1,26):
+    for day in range(1,13):
         solver = Solver(day = day, year = year, template = template)
         solver.to_file(year_folder = year_folder_path)
 
 if __name__ == "__main__":
-    create_solvers(2016)
+    create_solvers(2025)
