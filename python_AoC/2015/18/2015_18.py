@@ -1,5 +1,4 @@
-from template_creator import read_input
-from pandas import Timestamp, Timedelta
+from template_creator import run_puzzle
 
 
 def part1(puzzle_input: str) -> any:
@@ -18,14 +17,4 @@ def solve(puzzle_input: str) -> tuple[any, any]:
 
 
 if __name__ == "__main__":
-    i = read_input(example=True)
-
-    t_start = Timestamp.now()
-    p1, p2 = solve(puzzle_input=i)
-    t_stop = Timestamp.now()
-    t = Timedelta(t_stop - t_start).total_seconds()
-
-    print(f"{'Part one':<20}{p1:>10}")
-    print(f"{'Part two':<20}{p2:>10}")
-
-    print(f"\nSolved in {t} second{'s' if t >= 2 else ''}.")
+    run_puzzle(solve_function=solve, example=True)

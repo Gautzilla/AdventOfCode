@@ -1,5 +1,6 @@
 from pathlib import Path
-from pandas import Timestamp
+from pandas import Timestamp, Timedelta
+from typing import Callable
 
 
 def read_input(example: bool) -> str:
@@ -10,6 +11,20 @@ def read_input(example: bool) -> str:
         puzzle_input = i.read()
 
     return example_input if example else puzzle_input
+
+
+def run_puzzle(solve_function: Callable, *, example: bool):
+    i = read_input(example=example)
+
+    t_start = Timestamp.now()
+    p1, p2 = solve_function(puzzle_input=i)
+    t_stop = Timestamp.now()
+    t = Timedelta(t_stop - t_start).total_seconds()
+
+    print(f"{'Part one':<20}{p1:>10}")
+    print(f"{'Part two':<20}{p2:>10}")
+
+    print(f"\nSolved in {t} second{'s' if t >= 2 else ''}.")
 
 
 class Solver:

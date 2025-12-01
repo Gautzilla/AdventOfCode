@@ -1,5 +1,4 @@
-from template_creator import read_input
-from pandas import Timestamp, Timedelta
+from template_creator import run_puzzle
 
 directions = {(0, 1), (1, 0), (0, -1), (-1, 0)}
 

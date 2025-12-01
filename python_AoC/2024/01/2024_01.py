@@ -1,5 +1,4 @@
-from template_creator import read_input
-from pandas import Timestamp, Timedelta
+from template_creator import run_puzzle
 
 
 def solve(puzzle_input: str) -> tuple[int, int]:
@@ -14,7 +13,7 @@ def solve(puzzle_input: str) -> tuple[int, int]:
 
 
 if __name__ == "__main__":
-    i = read_input(example=False)
+    i = read_input(example=True)
 
     t_start = Timestamp.now()
     p1, p2 = solve(puzzle_input=i)
