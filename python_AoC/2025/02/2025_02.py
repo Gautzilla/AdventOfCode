@@ -1,23 +1,29 @@
 from template_creator import run_puzzle
-import re
 
-def is_valid(id: int, pattern: str) -> bool:
-    return re.fullmatch(pattern=pattern, string=str(id)) is None
-
-def parse_ids(ids_str: str) -> range:
+def invalid_ids_p1(ids_str: str) -> list[int]:
     lower, upper = map(int,ids_str.split("-"))
-    return range(lower, upper+1)
+    chunk = int(str(lower)[:max(1,len(str(lower))//2)])
+    output = []
+    while (id := int(str(chunk)*2)) <= upper:
+        if id in range(lower,upper+1):
+            output.append(id)
+        chunk+=1
+    return output
 
-def sum_valid_ids(puzzle_input: str, regex_pattern: str) -> int:
+def invalid_ids_p2(ids_str: str) -> list[int]:
+    return []
+
+def sum_valid_ids(puzzle_input: str, part: int) -> int:
+    invalid_ids = invalid_ids_p1 if part == 1 else invalid_ids_p2
     return sum(
-        id for id_str in puzzle_input.split(",") for id in parse_ids(id_str) if not is_valid(id, pattern=regex_pattern)
+        id for id_str in puzzle_input.split(",") for id in invalid_ids(id_str)
     )
 
 def part1(puzzle_input: str) -> int:
-    return sum_valid_ids(puzzle_input=puzzle_input, regex_pattern=r"(\d+)\1")
+    return sum_valid_ids(puzzle_input=puzzle_input, part=1)
 
 def part2(puzzle_input: str) -> int:
-    return sum_valid_ids(puzzle_input=puzzle_input, regex_pattern=r"(\d+)\1+")
+    return sum_valid_ids(puzzle_input=puzzle_input, part=2)
 
 
 def solve(puzzle_input: str) -> tuple[int, int]:
