@@ -32,28 +32,23 @@ def part1(start: tuple[int,int]) -> int:
             continue
         visited.add(tachyon)
         running.add(tachyon)
-    """
-    for y in range(grid_size["y"]):
-        s = ""
-        for x in range(grid_size["x"]):
-            p = (x,y)
-            if p in visited:
-                s+="|"
-            elif p == start:
-                s+="S"
-            elif p in splitters:
-                s+="^"
-            else:
-                s += "."
-        print(s)
-    """
     return nb_splits
 
 def part2(start: tuple[int,int]) -> any:
-    visited = set()
-    running = set()
-
-    return ""
+    running = {(move_down(start),1)} # Coords, nb_paths
+    while any(r[0][1] < grid_size["y"]-1 for r in running):
+        next_row = {}
+        while running:
+            tachyon, nb_paths = running.pop()
+            tachyon = move_down(tachyon)
+            tachyons = {tachyon} if tachyon not in splitters else split(tachyon)
+            for tachyon in tachyons:
+                if tachyon in next_row:
+                    next_row[tachyon] += nb_paths
+                    continue
+                next_row[tachyon] = nb_paths
+        running = {(coords, nb_paths) for coords, nb_paths in next_row.items()}
+    return sum(nb_paths for coords, nb_paths in running)
 
 def parse_input(puzzle_input: str) -> tuple[int,int]:
     start = (0,0)
