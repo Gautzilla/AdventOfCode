@@ -39,8 +39,12 @@ class Solver:
     def to_file(self, year_folder: Path):
         directory = year_folder / f"{self.day:>02}"
         directory.mkdir(parents=True, exist_ok=True)
-        open(directory / "example_input.txt", "a").close()
-        open(directory / "puzzle_input.txt", "a").close()
+        for input in ("example_input.txt", "puzzle_input.txt"):
+            if (directory / input).exists():
+                continue
+            (directory/input).touch()
+        if (directory / f"{str(self)}.py").exists():
+            return
         with open(directory / f"{str(self)}.py", "w") as f:
             f.write(self.template)
         print(f"Created {str(self)} in {year_folder}")
