@@ -63,8 +63,8 @@ def link(box1: Box, box2: Box, circuits: set[Circuit]) -> None:
         return
     circuits.add(Circuit((box1, box2)))
 
-def part1(boxes: list[Box]) -> int:
-    distances = list(sorted(parse_distances(boxes).items(), key = lambda couple: couple[1]))[:1000]
+def part1(distances: list) -> int:
+    distances = distances[:1000]
     circuits = set()
     while distances:
         (box1,box2),_ = distances.pop(0)
@@ -72,14 +72,24 @@ def part1(boxes: list[Box]) -> int:
     c1,c2,c3 = map(lambda c: c.size,list(sorted(circuits, key= lambda c: c.size))[-3:])
     return c1*c2*c3
 
-def part2(puzzle_input: str) -> any:
-    return ""
+def part2(boxes: list[Box], distances: list) -> int:
+    circuits = set()
+    for box in boxes:
+        circuits.add(Circuit([box]))
+    while True:
+        (box1, box2), _ = distances.pop(0)
+        link(box1, box2, circuits)
+        if sum(1 for _ in circuits) == 1:
+            return box1.coords[0] * box2.coords[0]
 
 
-def solve(puzzle_input: str) -> tuple[any, any]:
+def solve(puzzle_input: str) -> tuple[int, int]:
     boxes = parse_boxes(puzzle_input)
-    part_one = part1(boxes)
-    part_two = part2(puzzle_input)
+    distances = list(
+        sorted(parse_distances(boxes).items(), key=lambda couple: couple[1])
+    )
+    part_one = part1(distances)
+    part_two = part2(boxes, distances)
 
     return part_one, part_two
 
