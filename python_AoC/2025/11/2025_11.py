@@ -8,30 +8,45 @@ def parse_input(puzzle_input: str) -> dict[str, list[str]]:
         devices[device] = [link.strip() for link in links.split()]
     return devices
 
-nb_paths_to_out = {}
-
-def DFS(device: str, devices: dict[str, list[str]]) -> int:
+def DFS(device: str, devices: dict[str, list[str]], cache: dict[str, int]) -> int:
     if device == "out":
         return 1
-    if device in nb_paths_to_out:
-        return nb_paths_to_out[device]+1
+    if device in cache:
+        return cache[device]
     paths=0
     for link in devices[device]:
-        paths += DFS(link, devices)
-    nb_paths_to_out["device"] = paths
+        paths += DFS(link, devices, cache)
+    cache[device] = paths
     return paths
 
-def part1(devices: dict[str, list[str]]) -> any:
-    return DFS("you", devices)
+def DFS_p2(device: str, devices: dict[str,list[str]], dac_and_fft_visited: int, cache: dict[tuple[str,int], int]):
+    if device == "out":
+        return 1 if dac_and_fft_visited == (1|2) else 0
+    key = (device, dac_and_fft_visited)
+    if key in cache:
+        return cache[key]
+    if device == "dac":
+        dac_and_fft_visited |= 1
+    if device == "fft":
+        dac_and_fft_visited |= 2
+    paths=0
+    for link in devices[device]:
+        paths += DFS_p2(link, devices, dac_and_fft_visited, cache)
+    cache[key] = paths
+    return paths
 
-def part2(puzzle_input: str) -> any:
-    return ""
+
+def part1(devices: dict[str, list[str]]) -> any:
+    return DFS("you", devices, {})
+
+def part2(devices: dict[str, list[str]]) -> any:
+    return DFS_p2("svr", devices, 0, {})
 
 
 def solve(puzzle_input: str) -> tuple[any, any]:
     devices = parse_input(puzzle_input)
-    part_one = part1(devices)
-    part_two = part2(puzzle_input)
+    part_one = 1 #part1(devices)
+    part_two = part2(devices)
 
     return part_one, part_two
 
